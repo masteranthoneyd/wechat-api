@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 
 import static io.github.biezhi.wechat.api.constant.Constant.*;
 import static java.util.Collections.emptyList;
+import static java.util.regex.Pattern.compile;
 
 /**
  * 微信API实现
@@ -44,16 +45,17 @@ import static java.util.Collections.emptyList;
 @Slf4j
 public class WeChatApiImpl implements WeChatApi {
 
-    private static final Pattern UUID_PATTERN          = Pattern.compile("window.QRLogin.code = (\\d+); window.QRLogin.uuid = \"(\\S+?)\";");
-    private static final Pattern CHECK_LOGIN_PATTERN   = Pattern.compile("window.code=(\\d+)");
-    private static final Pattern PROCESS_LOGIN_PATTERN = Pattern.compile("window.redirect_uri=\"(\\S+)\";");
-    private static final Pattern SYNC_CHECK_PATTERN    = Pattern.compile("window.synccheck=\\{retcode:\"(\\d+)\",selector:\"(\\d+)\"}");
+	private static final Pattern UUID_PATTERN = compile("window.QRLogin.code = (\\d+); window.QRLogin.uuid = \"(\\S+?)\";");
+	private static final Pattern CHECK_LOGIN_PATTERN = compile("window.code=(\\d+)");
+	private static final Pattern PROCESS_LOGIN_PATTERN = compile("window.redirect_uri=\"(\\S+)\";");
+	private static final Pattern SYNC_CHECK_PATTERN = compile("window.synccheck=\\{retcode:\"(\\d+)\",selector:\"(\\d+)\"}");
 
-    private String    uuid;
-    private boolean   logging;
-    private int       memberCount;
-    private WeChatBot bot;
-    private BotClient client;
+	private String uuid;
+	private boolean logging;
+	private boolean init = false;
+	private int memberCount;
+	private WeChatBot bot;
+	private BotClient client;
 
     /**
      * 所有账号
@@ -153,7 +155,10 @@ public class WeChatApiImpl implements WeChatApi {
         }
 
         // TODO: 调用两次?
-        this.webInit();
+		if (init) {
+			return;
+		}
+		this.webInit();
         this.statusNotify();
         this.loadContact(0);
 
@@ -170,6 +175,7 @@ public class WeChatApiImpl implements WeChatApi {
         log.info("[{}] 登录成功.", bot.session().getNickName());
         this.startRevive();
         this.logging = false;
+		this.init = true;
     }
 
     /**
