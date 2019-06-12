@@ -6,6 +6,7 @@ import io.github.biezhi.wechat.api.enums.AccountType;
 import io.github.biezhi.wechat.api.enums.MsgType;
 import io.github.biezhi.wechat.api.model.WeChatMessage;
 import io.github.biezhi.wechat.utils.StringUtils;
+import io.github.biezhi.wechat.utils.WeChatUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -29,6 +30,7 @@ public class MyBot extends WeChatBot {
     @Bind(msgType = MsgType.TEXT, accountType = AccountType.TYPE_GROUP)
     public void groupMessage(WeChatMessage message) {
         log.info("接收到群 [{}] 的消息: {}", message.getName(), message.getText());
+        log.info("raw: {}", WeChatUtils.toPrettyJson(message.getRaw()));
         // this.api().sendText(message.getFromUserName(), "自动回复: " + message.getText());
     }
 
@@ -41,6 +43,7 @@ public class MyBot extends WeChatBot {
     public void friendMessage(WeChatMessage message) {
         if (StringUtils.isNotEmpty(message.getName())) {
             log.info("接收到好友 [{}] 的消息: {}", message.getName(), message.getText());
+			log.info("raw: {}", WeChatUtils.toPrettyJson(message.getRaw()));
             // this.api().sendText(message.getFromUserName(), "自动回复: " + message.getText());
 //            this.api().sendFile("战斗型美少女", "/Users/biezhi/Desktop/Hot_Spots_blade2.0.4_alpha1.html");
         }
@@ -49,7 +52,6 @@ public class MyBot extends WeChatBot {
     /**
      * 好友验证消息
      *
-     * @param message
      */
 /*    @Bind(msgType = MsgType.ADD_FRIEND)
     public void addFriend(WeChatMessage message) {

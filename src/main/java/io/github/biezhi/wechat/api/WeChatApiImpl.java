@@ -33,6 +33,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static io.github.biezhi.wechat.api.constant.Constant.*;
+import static io.github.biezhi.wechat.utils.StringUtils.isNotEmpty;
+import static io.github.biezhi.wechat.utils.WeChatUtils.toPrettyJson;
 import static java.util.Collections.emptyList;
 import static java.util.regex.Pattern.compile;
 
@@ -49,6 +51,8 @@ public class WeChatApiImpl implements WeChatApi {
 	private static final Pattern CHECK_LOGIN_PATTERN = compile("window.code=(\\d+)");
 	private static final Pattern PROCESS_LOGIN_PATTERN = compile("window.redirect_uri=\"(\\S+)\";");
 	private static final Pattern SYNC_CHECK_PATTERN = compile("window.synccheck=\\{retcode:\"(\\d+)\",selector:\"(\\d+)\"}");
+	private static final Pattern MODIFY_GROUP_NAME_PATTERN = Pattern.compile("修改群名为“(.*)”");
+	private static final Pattern INVITE_FRIEND_PATTERN = Pattern.compile("邀请\"(.*)\"加入了群聊");
 
 	private String uuid;
 	private boolean logging;
@@ -166,6 +170,9 @@ public class WeChatApiImpl implements WeChatApi {
         this.startRevive();
         this.logging = false;
 		this.init = true;
+		log.info("初始化完毕, 好友列表: " + toPrettyJson(contactList));
+		log.info("群列表: " + toPrettyJson(groupList));
+		log.info("自己: " + toPrettyJson(bot.session().getAccount()));
     }
 
     /**
@@ -421,7 +428,6 @@ public class WeChatApiImpl implements WeChatApi {
                 .add("BaseRequest", bot.session().getBaseRequest())
                 .add("SyncKey", bot.session().getSyncKey())
                 .add("rr", ~(System.currentTimeMillis() / 1000)));
-
         WebSyncResponse webSyncResponse = response.parse(WebSyncResponse.class);
         if (!webSyncResponse.success()) {
             log.warn("获取消息失败");
@@ -472,7 +478,7 @@ public class WeChatApiImpl implements WeChatApi {
             List<Account> memberList = WeChatUtils.fromJson(WeChatUtils.toJson(jsonObject.getAsJsonArray("MemberList")), new TypeToken<List<Account>>() {});
 
             for (Account account : memberList) {
-                if (null == account.getUserName()) {
+                if (account.getUserName() != null) {
                     accountMap.put(account.getUserName(), account);
                 }
             }
@@ -697,8 +703,8 @@ public class WeChatApiImpl implements WeChatApi {
         if (null == account) {
             return name;
         }
-        String nickName = StringUtils.isNotEmpty(account.getRemarkName()) ? account.getRemarkName() : account.getNickName();
-        return StringUtils.isNotEmpty(nickName) ? nickName : name;
+        String nickName = isNotEmpty(account.getRemarkName()) ? account.getRemarkName() : account.getNickName();
+        return isNotEmpty(nickName) ? nickName : name;
     }
 
     private List<Account> getNameById(String id) {
@@ -778,7 +784,6 @@ public class WeChatApiImpl implements WeChatApi {
 
         // 不处理自己发的消息
         if (message.getFromUserName().equals(bot.session().getUserName())) {
-			log.info("接收到自己的消息: {}", WeChatUtils.toJson(message));
             return null;
         }
 
@@ -803,7 +808,7 @@ public class WeChatApiImpl implements WeChatApi {
         Account fromAccount = this.getAccountById(message.getFromUserName());
         if (null == fromAccount) {
             log.warn("消息类型: {}", message.msgType());
-            log.warn("消息主体: {}", WeChatUtils.toPrettyJson(message));
+            log.warn("消息主体: {}", toPrettyJson(message));
         } else {
             weChatMessageBuilder.fromNickName(fromAccount.getNickName()).fromRemarkName(fromAccount.getRemarkName());
             if (log.isDebugEnabled()) {
@@ -858,13 +863,25 @@ public class WeChatApiImpl implements WeChatApi {
             // 系统消息
             case SYSTEM:
             	log.info("系统消息: {}", WeChatUtils.toJson(message));
-                break;
-            // 撤回消息
+				if (fromAccount != null && isNotEmpty(message.getContent())) {
+					Matcher modifyGroupNameMatcher = MODIFY_GROUP_NAME_PATTERN.matcher(message.getContent());
+					if (modifyGroupNameMatcher.find()) {
+						fromAccount.setNickName(modifyGroupNameMatcher.group(1));
+						break;
+					}
+					Matcher inviteFriendMatcher = INVITE_FRIEND_PATTERN.matcher(message.getContent());
+					if (inviteFriendMatcher.find()) {
+						log.info("邀请了好友: {} 进群", modifyGroupNameMatcher.group(1));
+						break;
+					}
+				}
+				break;
+			// 撤回消息
             case REVOKE_MSG:
                 log.info("{} 撤回了一条消息: {}", name, content);
                 return weChatMessageBuilder.build();
             default:
-                log.info("该消息类型为: {}, 可能是表情，图片, 链接或红包: {}", type, WeChatUtils.toJson(message));
+                log.info("未处理的消息类型: {}, 可能是表情，图片, 链接或红包: {}", type, WeChatUtils.toJson(message));
                 break;
         }
         return weChatMessageBuilder.build();
@@ -872,15 +889,15 @@ public class WeChatApiImpl implements WeChatApi {
 
     private String searchContent(String key, String content) {
         String r = WeChatUtils.match(key + "\\s?=\\s?\"([^\"<]+)\"", content);
-        if (StringUtils.isNotEmpty(r)) {
+        if (isNotEmpty(r)) {
             return r;
         }
         r = WeChatUtils.match(String.format("<%s>([^<]+)</%s>", key, key), content);
-        if (StringUtils.isNotEmpty(r)) {
+        if (isNotEmpty(r)) {
             return r;
         }
         r = WeChatUtils.match(String.format("<%s><\\!\\[CDATA\\[(.*?)\\]\\]></%s>", key, key), content);
-        if (StringUtils.isNotEmpty(r)) {
+        if (isNotEmpty(r)) {
             return r;
         }
         return "";
