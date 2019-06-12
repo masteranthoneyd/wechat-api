@@ -154,7 +154,6 @@ public class WeChatApiImpl implements WeChatApi {
             }
         }
 
-        // TODO: 调用两次?
 		if (init) {
 			return;
 		}
@@ -751,16 +750,11 @@ public class WeChatApiImpl implements WeChatApi {
     public List<WeChatMessage> handleMsg(List<Message> messages) {
         if (null != messages && messages.size() > 0) {
             List<WeChatMessage> weChatMessages = new ArrayList<>(messages.size());
-            boolean             hashNewMsg     = false;
-            for (Message message : messages) {
+			for (Message message : messages) {
                 WeChatMessage weChatMessage = this.processMsg(message);
                 if (null != weChatMessage) {
                     weChatMessages.add(weChatMessage);
-                    hashNewMsg = true;
-                }
-            }
-            if (hashNewMsg) {
-                log.info("你有新的消息");
+				}
             }
             return weChatMessages;
         }
@@ -861,6 +855,7 @@ public class WeChatApiImpl implements WeChatApi {
                 return null;
             // 系统消息
             case SYSTEM:
+            	log.info("系统消息: {}", WeChatUtils.toJson(message));
                 break;
             // 撤回消息
             case REVOKE_MSG:
