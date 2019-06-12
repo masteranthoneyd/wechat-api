@@ -3,7 +3,6 @@ package io.github.biezhi.wechat.api.model;
 import io.github.biezhi.wechat.WeChatBot;
 import io.github.biezhi.wechat.api.enums.AccountType;
 import io.github.biezhi.wechat.api.enums.MsgType;
-import io.github.biezhi.wechat.exception.WeChatException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +11,6 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * 消息执行器
@@ -50,6 +47,7 @@ public class Invoke {
                 return;
             }
             Account account = bot.api().getAccountById(message.getFromUserName());
+            // TODO: 空 account 处理
             if (null == account) {
                 INVOKED_MSG.add(message.getId());
                 method.invoke(bot, message);

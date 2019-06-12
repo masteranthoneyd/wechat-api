@@ -135,14 +135,14 @@ public class Account implements Serializable {
         }
         if (verifyFlag > 0 && verifyFlag % 8 == 0) {
             this.accountType = AccountType.TYPE_MP;
-        }
-        if (API_SPECIAL_USER.contains(this.userName)) {
+        } else if (API_SPECIAL_USER.contains(this.userName)) {
             this.accountType = AccountType.TYPE_SPECIAL;
-        }
-        if (this.userName.startsWith("@@")) {
+        } else if (this.userName.startsWith("@@")) {
             this.accountType = AccountType.TYPE_GROUP;
-        }
-        return AccountType.TYPE_FRIEND;
+        } else {
+			this.accountType = AccountType.TYPE_FRIEND;
+		}
+        return accountType;
     }
 
 }

@@ -33,6 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static io.github.biezhi.wechat.api.constant.Constant.*;
+import static java.util.Collections.emptyList;
 
 /**
  * 微信API实现
@@ -64,25 +65,25 @@ public class WeChatApiImpl implements WeChatApi {
      * 特殊账号
      */
     @Getter
-    private List<Account> specialUsersList = Collections.EMPTY_LIST;
+    private List<Account> specialUsersList = emptyList();
 
     /**
      * 公众号、服务号
      */
     @Getter
-    private List<Account> publicUsersList = Collections.EMPTY_LIST;
+    private List<Account> publicUsersList = emptyList();
 
     /**
      * 好友列表
      */
     @Getter
-    private List<Account> contactList = Collections.EMPTY_LIST;
+    private List<Account> contactList = emptyList();
 
     /**
      * 群组
      */
     @Getter
-    private List<Account> groupList = Collections.EMPTY_LIST;
+    private List<Account> groupList = emptyList();
 
     /**
      * 群UserName列表
@@ -151,6 +152,7 @@ public class WeChatApiImpl implements WeChatApi {
             }
         }
 
+        // TODO: 调用两次?
         this.webInit();
         this.statusNotify();
         this.loadContact(0);
@@ -194,22 +196,22 @@ public class WeChatApiImpl implements WeChatApi {
      * @param uuid         二维码uuid
      * @param terminalShow 是否在终端显示输出
      */
-    private void getQrImage(String uuid, boolean terminalShow) {
-        String uid    = null != uuid ? uuid : this.uuid;
-        String imgDir = bot.config().assetsDir();
+	private void getQrImage(String uuid, boolean terminalShow) {
+		String uid = null != uuid ? uuid : this.uuid;
+		String imgDir = bot.config().assetsDir();
 
-        FileResponse fileResponse = this.client.download(
-                new FileRequest(String.format("%s/qrcode/%s", Constant.BASE_URL, uid)));
+		String qrImageUrl = String.format("%s/qrcode/%s", BASE_URL, uid);
+		FileResponse fileResponse = this.client.download(new FileRequest(qrImageUrl));
 
-        InputStream inputStream = fileResponse.getInputStream();
-        File        qrCode      = WeChatUtils.saveFile(inputStream, imgDir, "qrcode.png");
-        DateUtils.sleep(200);
-        try {
-            QRCodeUtils.showQrCode(qrCode, terminalShow);
-        } catch (Exception e) {
-            this.getQrImage(uid, terminalShow);
-        }
-    }
+		InputStream inputStream = fileResponse.getInputStream();
+		File qrCode = WeChatUtils.saveFile(inputStream, imgDir, "qrcode.jpeg");
+		DateUtils.sleep(300);
+		try {
+			QRCodeUtils.showQrCode(qrCode, terminalShow);
+		} catch (Exception e) {
+			this.getQrImage(uid, terminalShow);
+		}
+	}
 
     /**
      * 检查是否登录
@@ -359,7 +361,7 @@ public class WeChatApiImpl implements WeChatApi {
     }
 
     /**
-     * 开启一个县城接收监听
+     * 开启一个线程接收监听
      */
     private void startRevive() {
         bot.setRunning(true);

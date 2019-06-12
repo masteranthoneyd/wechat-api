@@ -87,14 +87,14 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
         </plugins>
     </build>
 
-    <profiles>
+    <!--<profiles>
         <profile>
             <id>release</id>
             <distributionManagement>
@@ -113,7 +113,7 @@
             </distributionManagement>
             <build>
                 <plugins>
-                    <!--  Source  -->
+                    &lt;!&ndash;  Source  &ndash;&gt;
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
@@ -127,8 +127,8 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!--  Javadoc  -->
-                    <plugin>
+                    &lt;!&ndash;  Javadoc  &ndash;&gt;
+                    &lt;!&ndash;<plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
                         <version>2.10.2</version>
@@ -147,9 +147,9 @@
                                 </configuration>
                             </execution>
                         </executions>
-                    </plugin>
-                    <!--  Gpg Signature  -->
-                    <plugin>
+                    </plugin>&ndash;&gt;
+                    &lt;!&ndash;  Gpg Signature  &ndash;&gt;
+                    &lt;!&ndash;<plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <version>1.6</version>
@@ -162,7 +162,7 @@
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin>
+                    </plugin>&ndash;&gt;
                 </plugins>
             </build>
         </profile>
@@ -184,7 +184,7 @@
             </distributionManagement>
             <build>
                 <plugins>
-                    <!--  Source  -->
+                    &lt;!&ndash;  Source  &ndash;&gt;
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
@@ -198,17 +198,17 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!--skip test-->
-                    <plugin>
+                    &lt;!&ndash;skip test&ndash;&gt;
+                    &lt;!&ndash;<plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>2.17</version>
                         <configuration>
                             <skipTests>true</skipTests>
                         </configuration>
-                    </plugin>
-                    <!--  Gpg Signature  -->
-                    <plugin>
+                    </plugin>&ndash;&gt;
+                    &lt;!&ndash;  Gpg Signature  &ndash;&gt;
+                    &lt;!&ndash;<plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <version>1.6</version>
@@ -221,10 +221,10 @@
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin>
+                    </plugin>&ndash;&gt;
                 </plugins>
             </build>
         </profile>
-    </profiles>
+    </profiles>-->
 
 </project>

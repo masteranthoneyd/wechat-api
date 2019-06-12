@@ -14,6 +14,8 @@ import java.io.FileInputStream;
 import java.util.EnumMap;
 import java.util.Map;
 
+import static java.lang.System.getProperty;
+
 /**
  * 二维码工具类
  *
@@ -30,17 +32,14 @@ public class QRCodeUtils {
      * @param terminal
      */
     public static void showQrCode(File qrCode, boolean terminal) throws WriterException {
-        if (!terminal) {
-            String os = System.getProperty("os.name").toLowerCase();
-            try {
-                if (os.contains("mac") || os.contains("win")) {
-                    Desktop.getDesktop().open(qrCode);
-                    return;
-                }
-            } catch (Exception e) {
-                log.warn("在 {} 下打开文件 {} 失败", os, qrCode.getPath(), e);
-            }
-        }
+		if (!terminal) {
+			try {
+				Desktop.getDesktop().open(qrCode);
+				return;
+			} catch (Exception e) {
+				log.warn("在 {} 下打开文件 {} 失败", getProperty("os.name").toLowerCase(), qrCode.getPath(), e);
+			}
+		}
         Map<EncodeHintType, Object> hintMap = new EnumMap<EncodeHintType, Object>(EncodeHintType.class);
         hintMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");
         // Now with zxing version 3.2.1 you could change border size (white border size to just 1)

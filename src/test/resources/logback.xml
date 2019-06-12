@@ -8,7 +8,7 @@
         </layout>
     </appender>
 
-    <logger name="io.github.biezhi.wechat" level="debug" additivity="false">
+    <logger name="io.github.biezhi.wechat" level="info" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
 

@@ -258,20 +258,17 @@ public class WeChatBot {
         log.info("wechat-bot: {}", Constant.VERSION);
         api.login(config.autoLogin());
 
-        Thread msgHandle = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    if (hasMessage()) {
-                        WeChatMessage weChatMessage = nextMessage();
-                        callBack(mapping.get(MsgType.ALL), weChatMessage);
-                        callBack(mapping.get(weChatMessage.getMsgType()), weChatMessage);
-                    } else {
-                        DateUtils.sleep(50);
-                    }
-                }
-            }
-        });
+        Thread msgHandle = new Thread(() -> {
+			while (true) {
+				if (hasMessage()) {
+					WeChatMessage weChatMessage = nextMessage();
+					callBack(mapping.get(MsgType.ALL), weChatMessage);
+					callBack(mapping.get(weChatMessage.getMsgType()), weChatMessage);
+				} else {
+					DateUtils.sleep(50);
+				}
+			}
+		});
         msgHandle.setName("message-handle");
         msgHandle.setDaemon(true);
         msgHandle.start();

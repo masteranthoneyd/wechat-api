@@ -125,11 +125,11 @@ public class WeChatUtils {
         return GSON.fromJson(json, typeToken.getType());
     }
 
-    public static File saveFile(InputStream inputStream, String dirPath, String id) {
-        return saveFileByDay(inputStream, dirPath, id, false);
+    public static File saveFile(InputStream inputStream, String dirPath, String fileName) {
+        return saveFileByDay(inputStream, dirPath, fileName, false);
     }
 
-    public static File saveFileByDay(InputStream inputStream, String dirPath, String id, boolean byDay) {
+    public static File saveFileByDay(InputStream inputStream, String dirPath, String fileName, boolean byDay) {
         OutputStream outputStream = null;
         try {
             if (byDay) {
@@ -139,7 +139,7 @@ public class WeChatUtils {
             if (!dir.isDirectory()) {
                 dir.mkdirs();
             }
-            File path = new File(dir, id);
+            File path = new File(dir, fileName);
             if (path.exists()) {
                 path.delete();
             }
