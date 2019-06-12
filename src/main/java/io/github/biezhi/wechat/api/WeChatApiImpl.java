@@ -87,12 +87,7 @@ public class WeChatApiImpl implements WeChatApi {
     @Getter
     private List<Account> groupList = emptyList();
 
-    /**
-     * 群UserName列表
-     */
-    private Set<String> groupUserNames = new HashSet<>();
-
-    public WeChatApiImpl(WeChatBot bot) {
+	public WeChatApiImpl(WeChatBot bot) {
         this.bot = bot;
         this.client = bot.client();
     }
@@ -162,15 +157,11 @@ public class WeChatApiImpl implements WeChatApi {
         this.loadContact(0);
 
         log.info("应有 {} 个联系人，读取到联系人 {} 个", this.memberCount, this.accountMap.size());
-        System.out.println();
-
-        log.info("共有 {} 个群 | {} 个直接联系人 | {} 个特殊账号 ｜ {} 公众号或服务号",
-                this.groupUserNames.size(), this.contactList.size(),
+		// 加载群聊信息，群成员
+		this.loadGroupList();
+		log.info("共有 {} 个群 | {} 个直接联系人 | {} 个特殊账号 ｜ {} 公众号或服务号",
+                this.groupList.size(), this.contactList.size(),
                 this.specialUsersList.size(), this.publicUsersList.size());
-
-        // 加载群聊信息，群成员
-        this.loadGroupList();
-
         log.info("[{}] 登录成功.", bot.session().getNickName());
         this.startRevive();
         this.logging = false;
@@ -495,10 +486,6 @@ public class WeChatApiImpl implements WeChatApi {
 
         this.publicUsersList = new ArrayList<>(this.getAccountByType(AccountType.TYPE_MP));
         this.specialUsersList = new ArrayList<>(this.getAccountByType(AccountType.TYPE_SPECIAL));
-        Set<Account> groupAccounts = this.getAccountByType(AccountType.TYPE_GROUP);
-        for (Account groupAccount : groupAccounts) {
-            groupUserNames.add(groupAccount.getUserName());
-        }
     }
 
     /**
@@ -506,29 +493,35 @@ public class WeChatApiImpl implements WeChatApi {
      */
     public void loadGroupList() {
         log.info("加载群聊信息");
-
-        // 群账号
-        List<Map<String, String>> list = new ArrayList<>(groupUserNames.size());
-
-        for (String groupUserName : groupUserNames) {
-            Map<String, String> map = new HashMap<>(2);
-            map.put("UserName", groupUserName);
-            map.put("EncryChatRoomId", "");
-            list.add(map);
-        }
-
-        String url = String.format("%s/webwxbatchgetcontact?type=ex&r=%s&pass_ticket=%s",
-                bot.session().getUrl(), System.currentTimeMillis() / 1000, bot.session().getPassTicket());
-
-        // 加载群信息
-        JsonResponse jsonResponse = this.client.send(new JsonRequest(url).post().jsonBody()
-                .add("BaseRequest", bot.session().getBaseRequest())
-                .add("Count", groupUserNames.size())
-                .add("List", list)
-        );
-
-        this.groupList = WeChatUtils.fromJson(WeChatUtils.toJson(jsonResponse.toJsonObject().getAsJsonArray("ContactList")), new TypeToken<List<Account>>() {});
+		Set<Account> groupAccounts = this.getAccountByType(AccountType.TYPE_GROUP);
+		Set<String> groupUserNames = new HashSet<>(groupAccounts.size());
+		for (Account groupAccount : groupAccounts) {
+			groupUserNames.add(groupAccount.getUserName());
+		}
+		this.groupList = getGroupAccount(groupUserNames);
     }
+
+	private List<Account> getGroupAccount(Set<String> groupUserNames) {
+		List<Map<String, String>> list = new ArrayList<>(groupUserNames.size());
+
+		for (String groupUserName : groupUserNames) {
+			Map<String, String> map = new HashMap<>(2);
+			map.put("UserName", groupUserName);
+			map.put("EncryChatRoomId", "");
+			list.add(map);
+		}
+
+		String url = String.format("%s/webwxbatchgetcontact?type=ex&r=%s&pass_ticket=%s",
+				bot.session().getUrl(), System.currentTimeMillis() / 1000, bot.session().getPassTicket());
+
+		// 加载群信息
+		JsonResponse jsonResponse = this.client.send(new JsonRequest(url).post().jsonBody()
+																		 .add("BaseRequest", bot.session().getBaseRequest())
+																		 .add("Count", groupUserNames.size())
+																		 .add("List", list)
+		);
+		return WeChatUtils.fromJson(WeChatUtils.toJson(jsonResponse.toJsonObject().getAsJsonArray("ContactList")), new TypeToken<List<Account>>() {});
+	}
 
     /**
      * 根据UserName查询Account
@@ -538,7 +531,23 @@ public class WeChatApiImpl implements WeChatApi {
      */
     @Override
     public Account getAccountById(String id) {
-        return accountMap.get(id);
+		Account account = accountMap.get(id);
+		if (account == null && id.startsWith(GROUP_IDENTIFY)) {
+			Set<String> set = new HashSet<>();
+			set.add(id);
+			List<Account> groupAccount = getGroupAccount(set);
+			if (groupAccount != null && groupAccount.size() == 1) {
+				account = groupAccount.get(0);
+				accountMap.put(account.getUserName(), account);
+			} else {
+				account = new Account();
+				account.setUserName(id);
+				account.setNickName("未知群");
+				account.setRemarkName("未知群");
+				accountMap.put(id, account);
+			}
+		}
+		return account;
     }
 
     /**
@@ -769,19 +778,11 @@ public class WeChatApiImpl implements WeChatApi {
 
         // 不处理自己发的消息
         if (message.getFromUserName().equals(bot.session().getUserName())) {
+			log.info("接收到自己的消息: {}", WeChatUtils.toJson(message));
             return null;
         }
 
         if (message.isGroup()) {
-            // 如果本地缓存的群名列表没有当前群，则添加进去，下次更新使用
-            if (message.getFromUserName().contains(GROUP_IDENTIFY) &&
-                    !groupUserNames.contains(message.getFromUserName())) {
-                this.groupUserNames.add(message.getFromUserName());
-            }
-            if (message.getToUserName().contains(GROUP_IDENTIFY) &&
-                    !groupUserNames.contains(message.getToUserName())) {
-                this.groupUserNames.add(message.getToUserName());
-            }
             if (content.contains(GROUP_BR)) {
                 content = content.substring(content.indexOf(GROUP_BR) + 6);
             }
@@ -833,6 +834,7 @@ public class WeChatApiImpl implements WeChatApi {
                 return weChatMessageBuilder.voicePath(voicePath).build();
             // 好友请求
             case ADD_FRIEND:
+            	log.info("接收到好友请求: " + WeChatUtils.toJson(message));
                 return weChatMessageBuilder.text(message.getRecommend().getContent()).build();
             // 名片
             case PERSON_CARD:
