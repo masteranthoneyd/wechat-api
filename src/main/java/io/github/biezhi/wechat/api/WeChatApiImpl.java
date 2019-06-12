@@ -820,7 +820,8 @@ public class WeChatApiImpl implements WeChatApi {
             case TEXT:
                 // 被艾特的消息
                 if (content.startsWith("@" + bot.session().getNickName())) {
-                    content = content.substring(content.indexOf(" "));
+                    content = content.substring(content.indexOf(" "));
+					weChatMessageBuilder.isAtMe(true);
                 }
                 // 位置消息
                 if (content.contains(LOCATION_IDENTIFY)) {
