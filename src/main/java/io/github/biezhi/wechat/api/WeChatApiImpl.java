@@ -832,12 +832,12 @@ public class WeChatApiImpl implements WeChatApi {
                 return weChatMessageBuilder.text(content).build();
             // 聊天图片
             case IMAGE:
-                String imgPath = this.downloadImg(msgId);
-                return weChatMessageBuilder.imagePath(imgPath).build();
+                // String imgPath = this.downloadImg(msgId);
+                return weChatMessageBuilder.imagePath("").build();
             // 语音
             case VOICE:
-                String voicePath = this.downloadVoice(msgId);
-                return weChatMessageBuilder.voicePath(voicePath).build();
+                // String voicePath = this.downloadVoice(msgId);
+                return weChatMessageBuilder.voicePath("").build();
             // 好友请求
             case ADD_FRIEND:
             	log.info("接收到好友请求: " + WeChatUtils.toJson(message));
@@ -847,8 +847,8 @@ public class WeChatApiImpl implements WeChatApi {
                 return weChatMessageBuilder.recommend(message.getRecommend()).build();
             // 视频
             case VIDEO:
-                String videoPath = this.downloadVideo(msgId);
-                return weChatMessageBuilder.videoPath(videoPath).build();
+                // String videoPath = this.downloadVideo(msgId);
+                return weChatMessageBuilder.videoPath("").build();
             // 动画表情
             case EMOTICONS:
                 String imgUrl = this.searchContent("cdnurl", content);
