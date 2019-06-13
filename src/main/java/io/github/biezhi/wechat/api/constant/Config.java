@@ -60,7 +60,7 @@ public class Config {
 	public static final String CONF_LOVER_NICKNAME = "lover.nickname";
 	public static final String CONF_LOVER_USERNAME = "lover.username";
 
-	public String currentExecJarPath;
+	public String currentJarExecPath;
 
 
 	private Properties props = new Properties();
@@ -105,13 +105,13 @@ public class Config {
     }
 
 	private String getCurrentJarExecPath() throws UnsupportedEncodingException {
-		if (currentExecJarPath != null) {
-			return currentExecJarPath;
+		if (currentJarExecPath != null) {
+			return currentJarExecPath;
 		}
 		String pathGetClass = decode(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath(), UTF_8.toString());
 		int lastIndex = pathGetClass.lastIndexOf(File.separator) + 1;
-		currentExecJarPath = pathGetClass.substring(0, lastIndex);
-		return currentExecJarPath;
+		currentJarExecPath = pathGetClass.substring(0, lastIndex);
+		return currentJarExecPath;
 	}
 
 	public void set(String key, String value) {
