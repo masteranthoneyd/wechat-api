@@ -124,9 +124,8 @@ public class WeChatApiImpl implements WeChatApi {
                 this.uuid = pushLogin();
                 if (null == this.uuid) {
                     while (null == this.getUUID()) {
-                        DateUtils.sleep(10);
+                        DateUtils.sleep(100);
                     }
-                    log.info("开始下载二维码");
                     this.getQrImage(this.uuid, bot.config().openQrCode());
                     log.info("请使用手机扫描屏幕二维码");
                 }
@@ -165,7 +164,7 @@ public class WeChatApiImpl implements WeChatApi {
 		this.statusNotify();
 		this.loadContact(0);
 
-		log.info("应有 {} 个联系人，读取到联系人 {} 个", this.memberCount, this.accountMap.size());
+		// log.info("应有 {} 个联系人，读取到联系人 {} 个", this.memberCount, this.accountMap.size());
 		this.loadGroupList();
 		log.info("共有 {} 个群 | {} 个直接联系人 | {} 个特殊账号 ｜ {} 公众号或服务号",
                 this.groupList.size(), this.contactList.size(),
@@ -183,7 +182,7 @@ public class WeChatApiImpl implements WeChatApi {
 		String customGroupName = config.get(Config.CONF_GROUP_NAME);
 		for (Account account : groupList) {
 			if (account.getNickName().equals(customGroupName)) {
-				log.info("群 [{}] username: {}", customGroupName, account.getUserName());
+				log.info("group [{}] username: {}", customGroupName, account.getUserName());
 				config.set(Config.CONF_GROUP_USERNAME, account.getUserName());
 				break;
 			}
@@ -206,7 +205,7 @@ public class WeChatApiImpl implements WeChatApi {
      * @return 返回uuid
      */
     private String getUUID() {
-        log.info("获取二维码UUID");
+        log.info("Getting QrCode UUID......");
         // 登录
         ApiResponse response = this.client.send(new StringRequest("https://login.weixin.qq.com/jslogin")
                 .add("appid", "wx782c26e4c19acffb").add("fun", "new"));
@@ -229,6 +228,7 @@ public class WeChatApiImpl implements WeChatApi {
 		String imgDir = bot.config().assetsDir();
 
 		String qrImageUrl = String.format("%s/qrcode/%s", BASE_URL, uid);
+		log.info("Downloading QrCode from {}", qrImageUrl);
 		FileResponse fileResponse = this.client.download(new FileRequest(qrImageUrl));
 
 		InputStream inputStream = fileResponse.getInputStream();
@@ -348,8 +348,6 @@ public class WeChatApiImpl implements WeChatApi {
      * 开启状态通知
      */
     private void statusNotify() {
-        log.info("开启状态通知");
-
         String url = String.format("%s/webwxstatusnotify?lang=zh_CN&pass_ticket=%s",
                 bot.session().getUrl(), bot.session().getPassTicket());
 
@@ -365,7 +363,7 @@ public class WeChatApiImpl implements WeChatApi {
      * web 初始化
      */
     private void webInit() {
-        log.info("微信初始化...");
+        log.info("Wechat initializing......");
         int r = (int) (-System.currentTimeMillis() / 1000) / 1579;
         String url = String.format("%s/webwxinit?r=%d&pass_ticket=%s",
                 bot.session().getUrl(), r, bot.session().getPassTicket());

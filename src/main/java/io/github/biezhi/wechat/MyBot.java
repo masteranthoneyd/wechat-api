@@ -9,6 +9,8 @@ import io.github.biezhi.wechat.utils.StringUtils;
 import io.github.biezhi.wechat.utils.WeChatUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import static io.github.biezhi.wechat.api.constant.Config.CONF_GROUP_USERNAME;
+
 /**
  * 我的小机器人
  *
@@ -17,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class MyBot extends WeChatBot {
+
+	private String loverNickName;
 
     public MyBot(Config config) {
         super(config);
@@ -31,10 +35,19 @@ public class MyBot extends WeChatBot {
     public void groupMessage(WeChatMessage message) {
         log.info("接收到群 [{}] 的消息: {}", message.getName(), message.getText());
         log.info("raw: {}", WeChatUtils.toPrettyJson(message.getRaw()));
-        // this.api().sendText(message.getFromUserName(), "自动回复: " + message.getText());
+		if (this.config().get(CONF_GROUP_USERNAME).equals(message.getFromUserName())) {
+			this.api()
+				.sendText(message.getFromUserName(),
+						String.format("@%s %s", getLoverNickName(), message.getText() + "吗"));
+		}
     }
 
-    /**
+	private String getLoverNickName() {
+    	return loverNickName != null ? loverNickName :
+				(loverNickName = this.api().getAccountById(this.config().loverUserName()).getNickName());
+	}
+
+	/**
      * 绑定私聊消息
      *
      * @param message
@@ -45,7 +58,7 @@ public class MyBot extends WeChatBot {
             log.info("接收到好友 [{}] 的消息: {}", message.getName(), message.getText());
 			log.info("raw: {}", WeChatUtils.toPrettyJson(message.getRaw()));
 			if (message.getText().equals("拉我")) {
-				this.api().inviteJoinGroup(message.getFromUserName(), this.config().get(Config.CONF_GROUP_USERNAME));
+				this.api().inviteJoinGroup(message.getFromUserName(), this.config().get(CONF_GROUP_USERNAME));
 			}
             // this.api().sendText(message.getFromUserName(), "自动回复: " + message.getText());
 //            this.api().sendFile("战斗型美少女", "/Users/biezhi/Desktop/Hot_Spots_blade2.0.4_alpha1.html");

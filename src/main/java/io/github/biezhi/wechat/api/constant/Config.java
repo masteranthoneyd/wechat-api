@@ -174,4 +174,8 @@ public class Config {
         return Boolean.valueOf(props.getProperty(CONF_AUTO_LOGIN, CONF_AUTO_LOGIN_DEFAULT));
     }
 
+	public String loverUserName() {
+		return props.getProperty(CONF_LOVER_USERNAME);
+	}
+
 }

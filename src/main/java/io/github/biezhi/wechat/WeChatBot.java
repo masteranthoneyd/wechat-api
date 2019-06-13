@@ -273,9 +273,9 @@ public class WeChatBot {
      */
     public void start() {
 		this.api = new WeChatApiImpl(this);
-        api.login(config.autoLogin());
+		api.login(config.autoLogin());
 
-        Thread msgHandle = new Thread(() -> {
+		Thread msgHandle = new Thread(() -> {
 			while (true) {
 				if (hasMessage()) {
 					WeChatMessage weChatMessage = nextMessage();
@@ -286,30 +286,31 @@ public class WeChatBot {
 				}
 			}
 		});
-        msgHandle.setName("message-handle");
-        msgHandle.setDaemon(true);
-        msgHandle.start();
-
-        this.other();
+		msgHandle.setName("message-handle");
+		msgHandle.setDaemon(true);
+		msgHandle.start();
+		this.other();
     }
 
 	/**
      * 启动后主线程干的事，子类可重写
      */
-    protected void other() {
-        while (true) {
-            Scanner scanner = new Scanner(System.in);
-            if (scanner.hasNext()) {
-                String text = scanner.next();
-                if ("quit".equals(text) || "exit".equals(text)) {
-                    api.logout();
-                    break;
-                }
-            }
-            DateUtils.sleep(100);
-        }
-        System.exit(0);
-    }
+	protected void other() {
+		while (true) {
+			Scanner scanner = new Scanner(System.in);
+			if (scanner.hasNext()) {
+				String text = scanner.next();
+				if ("quit".equals(text) || "exit".equals(text)) {
+					api.logout();
+					break;
+				} else {
+					WeChatBot.this.api.sendText(WeChatBot.this.config.loverUserName(), text);
+				}
+			}
+			DateUtils.sleep(1000);
+		}
+		System.exit(0);
+	}
 
     /**
      * 回调微信消息给客户端、存储器

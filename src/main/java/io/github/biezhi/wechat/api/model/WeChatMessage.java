@@ -105,7 +105,7 @@ public class WeChatMessage {
      * @return
      */
     public String getName() {
-        return StringUtils.isEmpty(fromRemarkName) ? this.fromNickName : this.fromRemarkName;
+        return StringUtils.isNotEmpty(fromNickName) ? this.fromNickName : this.fromRemarkName;
     }
 
     /**
