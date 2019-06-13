@@ -29,14 +29,16 @@ public class QRCodeUtils {
      * 显示二维码，Linux会显示在终端
      *
      * @param qrCode
-     * @param terminal
+     * @param openQrcode
      */
-    public static void showQrCode(File qrCode, boolean terminal) throws WriterException {
-		try {
-			Desktop.getDesktop().open(qrCode);
-			return;
-		} catch (Exception e) {
-			log.warn("在 {} 下打开文件 {} 失败", getProperty("os.name").toLowerCase(), qrCode.getPath(), e);
+    public static void showQrCode(File qrCode, boolean openQrcode) throws WriterException {
+		if (openQrcode) {
+			try {
+				Desktop.getDesktop().open(qrCode);
+				return;
+			} catch (Exception e) {
+				log.warn("在 {} 下打开文件 {} 失败", getProperty("os.name").toLowerCase(), qrCode.getPath(), e);
+			}
 		}
         Map<EncodeHintType, Object> hintMap = new EnumMap<EncodeHintType, Object>(EncodeHintType.class);
         hintMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");
@@ -48,7 +50,7 @@ public class QRCodeUtils {
         String       qrContent    = QRCodeUtils.readQRCode(qrCode, hintMap);
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix    bitMatrix;
-        bitMatrix = qrCodeWriter.encode(qrContent, BarcodeFormat.QR_CODE, 10, 10, hintMap);
+        bitMatrix = qrCodeWriter.encode(qrContent, BarcodeFormat.QR_CODE, 5, 5, hintMap);
         System.out.println(toAscii(bitMatrix));
     }
 

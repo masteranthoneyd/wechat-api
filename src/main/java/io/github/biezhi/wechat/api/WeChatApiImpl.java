@@ -127,7 +127,7 @@ public class WeChatApiImpl implements WeChatApi {
                         DateUtils.sleep(10);
                     }
                     log.info("开始下载二维码");
-                    this.getQrImage(this.uuid, bot.config().showTerminal());
+                    this.getQrImage(this.uuid, bot.config().openQrCode());
                     log.info("请使用手机扫描屏幕二维码");
                 }
                 Boolean isLoggedIn = false;
@@ -153,23 +153,25 @@ public class WeChatApiImpl implements WeChatApi {
                 }
             }
         }
+		this.logging = false;
+		initAfterLogin();
+	}
 
+	private void initAfterLogin() {
 		if (init) {
 			return;
 		}
 		this.webInit();
-        this.statusNotify();
-        this.loadContact(0);
+		this.statusNotify();
+		this.loadContact(0);
 
-        log.info("应有 {} 个联系人，读取到联系人 {} 个", this.memberCount, this.accountMap.size());
-		// 加载群聊信息，群成员
+		log.info("应有 {} 个联系人，读取到联系人 {} 个", this.memberCount, this.accountMap.size());
 		this.loadGroupList();
 		log.info("共有 {} 个群 | {} 个直接联系人 | {} 个特殊账号 ｜ {} 公众号或服务号",
                 this.groupList.size(), this.contactList.size(),
                 this.specialUsersList.size(), this.publicUsersList.size());
-        log.info("[{}] 登录成功.", bot.session().getNickName());
-        this.startRevive();
-        this.logging = false;
+		log.info("[{}] 登录成功.", bot.session().getNickName());
+		this.startRevive();
 		this.init = true;
 
 		initCustomConfig();
@@ -220,9 +222,9 @@ public class WeChatApiImpl implements WeChatApi {
      * 读取二维码图片
      *
      * @param uuid         二维码uuid
-     * @param terminalShow 是否在终端显示输出
+     * @param openQrCode 是否在终端显示输出
      */
-	private void getQrImage(String uuid, boolean terminalShow) {
+	private void getQrImage(String uuid, boolean openQrCode) {
 		String uid = null != uuid ? uuid : this.uuid;
 		String imgDir = bot.config().assetsDir();
 
@@ -233,9 +235,9 @@ public class WeChatApiImpl implements WeChatApi {
 		File qrCode = WeChatUtils.saveFile(inputStream, imgDir, "qrcode.jpeg");
 		DateUtils.sleep(300);
 		try {
-			QRCodeUtils.showQrCode(qrCode, terminalShow);
+			QRCodeUtils.showQrCode(qrCode, openQrCode);
 		} catch (Exception e) {
-			this.getQrImage(uid, terminalShow);
+			this.getQrImage(uid, openQrCode);
 		}
 	}
 
@@ -476,8 +478,11 @@ public class WeChatApiImpl implements WeChatApi {
         this.logging = false;
         this.client.cookies().clear();
         String file = bot.config().assetsDir() + "/login.json";
-        new File(file).delete();
-        System.exit(0);
+		boolean delete = new File(file).delete();
+		if (!delete && log.isDebugEnabled()) {
+			log.debug("delete login.json fail");
+		}
+		System.exit(0);
     }
 
     /**
@@ -487,33 +492,30 @@ public class WeChatApiImpl implements WeChatApi {
      */
     @Override
     public void loadContact(int seq) {
-        log.info("开始获取联系人信息");
-        while (true) {
-            String url = String.format("%s/webwxgetcontact?r=%s&seq=%s&skey=%s",
-                    bot.session().getUrl(), System.currentTimeMillis(),
-                    seq, bot.session().getSKey());
+        log.info("Loading contact info......");
+		do {
+			String url = String.format("%s/webwxgetcontact?r=%s&seq=%s&skey=%s",
+					bot.session().getUrl(), System.currentTimeMillis(),
+					seq, bot.session().getSKey());
 
-            JsonResponse response = this.client.send(new JsonRequest(url).jsonBody());
+			JsonResponse response = this.client.send(new JsonRequest(url).jsonBody());
 
-            JsonObject jsonObject = response.toJsonObject();
-            seq = jsonObject.get("Seq").getAsInt();
+			JsonObject jsonObject = response.toJsonObject();
+			seq = jsonObject.get("Seq").getAsInt();
 
-            this.memberCount += jsonObject.get("MemberCount").getAsInt();
-            List<Account> memberList = WeChatUtils.fromJson(WeChatUtils.toJson(jsonObject.getAsJsonArray("MemberList")), new TypeToken<List<Account>>() {});
+			this.memberCount += jsonObject.get("MemberCount").getAsInt();
+			List<Account> memberList = WeChatUtils.fromJson(WeChatUtils.toJson(jsonObject.getAsJsonArray("MemberList")), new TypeToken<List<Account>>() {
+			});
 
-            for (Account account : memberList) {
-                if (account.getUserName() != null) {
-                    accountMap.put(account.getUserName(), account);
-                }
-            }
-            // 查看seq是否为0，0表示好友列表已全部获取完毕，若大于0，则表示好友列表未获取完毕，当前的字节数（断点续传）
-            if (seq == 0) {
-                break;
-            }
-        }
+			for (Account account : memberList) {
+				if (account.getUserName() != null) {
+					accountMap.put(account.getUserName(), account);
+				}
+			}
+			// 查看seq是否为0，0表示好友列表已全部获取完毕，若大于0，则表示好友列表未获取完毕，当前的字节数（断点续传）
+		} while (seq != 0);
 
         this.contactList = new ArrayList<>(this.getAccountByType(AccountType.TYPE_FRIEND));
-
         this.publicUsersList = new ArrayList<>(this.getAccountByType(AccountType.TYPE_MP));
         this.specialUsersList = new ArrayList<>(this.getAccountByType(AccountType.TYPE_SPECIAL));
     }
@@ -521,8 +523,8 @@ public class WeChatApiImpl implements WeChatApi {
     /**
      * 加载群信息
      */
-    public void loadGroupList() {
-        log.info("加载群聊信息");
+    private void loadGroupList() {
+        log.info("Loading group info......");
 		Set<Account> groupAccounts = this.getAccountByType(AccountType.TYPE_GROUP);
 		Set<String> groupUserNames = new HashSet<>(groupAccounts.size());
 		for (Account groupAccount : groupAccounts) {

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,8 +32,7 @@ public class Config {
     /**
      * 是否输出二维码到终端
      */
-    private static final String CONF_PRINT_TERMINAL         = "wechat.print-terminal";
-    private static final String CONF_PRINT_TERMINAL_DEFAULT = "false";
+    private static final String CONF_OPEN_QRCODE = "wechat.open-qrcode";
 
     /**
      * 自动回复消息，测试时用
@@ -66,8 +66,8 @@ public class Config {
 	private Properties props = new Properties();
 
     public static Config me() {
-		Config load = new Config().load("config.properties")
-								  .load("wechat.properties");
+		Config load = new Config().load("config.properties", true)
+								  .load("wechat.properties", false);
 		if (log.isDebugEnabled()) {
 			log.debug("Property load: {}", load.props);
 		}
@@ -78,15 +78,20 @@ public class Config {
      * 加载 ClassPath 下的配置文件
      *
      * @param filePath
-     * @return
+     * @param require
+	 * @return
      */
-    public Config load(String filePath) {
+    public Config load(String filePath, boolean require) {
 		InputStream in = null;
 		InputStreamReader reader = null;
 		try {
 			String pathGetClass = getCurrentJarExecPath();
 			File file = new File(pathGetClass + filePath);
-			in = file.exists() ? new FileInputStream(file) : getClass().getClassLoader().getResourceAsStream(filePath);
+			boolean fileExists = file.exists();
+			if (require && !fileExists) {
+				throw new FileNotFoundException("config.properties is required!");
+			}
+			in = fileExists ? new FileInputStream(file) : getClass().getClassLoader().getResourceAsStream(filePath);
 			assert in != null;
 			reader = new InputStreamReader(in, UTF_8);
 			props.load(reader);
@@ -138,16 +143,11 @@ public class Config {
         return this;
     }
 
-    public boolean showTerminal() {
-        return Boolean.valueOf(props.getProperty(CONF_PRINT_TERMINAL, CONF_PRINT_TERMINAL_DEFAULT));
+    public boolean openQrCode() {
+        return Boolean.valueOf(props.getProperty(CONF_OPEN_QRCODE));
     }
 
-    public Config showTerminal(boolean show) {
-        props.setProperty(CONF_PRINT_TERMINAL, String.valueOf(show));
-        return this;
-    }
-
-    public boolean autoReply() {
+	public boolean autoReply() {
         return Boolean.valueOf(props.getProperty(CONF_AUTO_REPLY, CONF_AUTO_REPLY_DEFAULT));
     }
 
