@@ -18,7 +18,9 @@ public class OkHttpUtils {
      * @return
      */
     public static OkHttpClient.Builder configureToIgnoreCertificate(OkHttpClient.Builder builder) {
-        log.warn("Ignore Ssl Certificate");
+		if (log.isDebugEnabled()) {
+			log.debug("Ignore Ssl Certificate");
+		}
         try {
             /*Create a trust manager that does not validate certificate chains*/
             final TrustManager[] trustAllCerts = new TrustManager[]{

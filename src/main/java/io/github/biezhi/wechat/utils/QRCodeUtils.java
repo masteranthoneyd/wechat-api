@@ -32,13 +32,11 @@ public class QRCodeUtils {
      * @param terminal
      */
     public static void showQrCode(File qrCode, boolean terminal) throws WriterException {
-		if (!terminal) {
-			try {
-				Desktop.getDesktop().open(qrCode);
-				return;
-			} catch (Exception e) {
-				log.warn("在 {} 下打开文件 {} 失败", getProperty("os.name").toLowerCase(), qrCode.getPath(), e);
-			}
+		try {
+			Desktop.getDesktop().open(qrCode);
+			return;
+		} catch (Exception e) {
+			log.warn("在 {} 下打开文件 {} 失败", getProperty("os.name").toLowerCase(), qrCode.getPath(), e);
 		}
         Map<EncodeHintType, Object> hintMap = new EnumMap<EncodeHintType, Object>(EncodeHintType.class);
         hintMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");

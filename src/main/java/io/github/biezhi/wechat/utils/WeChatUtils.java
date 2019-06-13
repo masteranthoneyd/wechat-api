@@ -4,16 +4,25 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.vdurmont.emoji.EmojiParser;
+import io.github.biezhi.wechat.api.constant.Constant;
 import io.github.biezhi.wechat.exception.WeChatException;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.FileNameMap;
 import java.net.URLConnection;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.lang.System.getProperty;
 
 /**
  * 微信公共静态方法
@@ -181,5 +190,21 @@ public class WeChatUtils {
         Random random = new Random();
         return random.nextInt(max) % (max - min + 1) + min;
     }
+
+	public static void printSystemInfo() {
+		System.out.println("\n" +
+				" __          __       _           _     ____        _   \n" +
+				" \\ \\        / /      | |         | |   |  _ \\      | |  \n" +
+				"  \\ \\  /\\  / /__  ___| |__   __ _| |_  | |_) | ___ | |_ \n" +
+				"   \\ \\/  \\/ / _ \\/ __| '_ \\ / _` | __| |  _ < / _ \\| __|\n" +
+				"    \\  /\\  /  __/ (__| | | | (_| | |_  | |_) | (_) | |_ \n" +
+				"     \\/  \\/ \\___|\\___|_| |_|\\__,_|\\__| |____/ \\___/ \\__|\n" +
+				"                                                        \n" +
+				"                                                        \n");
+		log.info("Wechat Bot Version:	 {}", Constant.VERSION);
+		log.info("Java Version:			 {}", getProperty("java.version"));
+		log.info("Operating System :	 {}", getProperty("os.name") + " " + getProperty("os.arch") + " " + System.getProperty("os.version"));
+		log.info("User Name:			 {}", getProperty("user.name"));
+	}
 
 }

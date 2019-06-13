@@ -66,8 +66,11 @@ public class Config {
 	private Properties props = new Properties();
 
     public static Config me() {
-		Config load = new Config().load("config.properties").load("wechat.properties");
-		log.info("Property load: {}", load.props);
+		Config load = new Config().load("config.properties")
+								  .load("wechat.properties");
+		if (log.isDebugEnabled()) {
+			log.debug("Property load: {}", load.props);
+		}
 		return load;
     }
 

@@ -5,9 +5,12 @@ import io.github.biezhi.wechat.api.WeChatApiImpl;
 import io.github.biezhi.wechat.api.annotation.Bind;
 import io.github.biezhi.wechat.api.client.BotClient;
 import io.github.biezhi.wechat.api.constant.Config;
-import io.github.biezhi.wechat.api.constant.Constant;
 import io.github.biezhi.wechat.api.enums.MsgType;
-import io.github.biezhi.wechat.api.model.*;
+import io.github.biezhi.wechat.api.model.Account;
+import io.github.biezhi.wechat.api.model.HotReload;
+import io.github.biezhi.wechat.api.model.Invoke;
+import io.github.biezhi.wechat.api.model.LoginSession;
+import io.github.biezhi.wechat.api.model.WeChatMessage;
 import io.github.biezhi.wechat.exception.WeChatException;
 import io.github.biezhi.wechat.utils.DateUtils;
 import io.github.biezhi.wechat.utils.OkHttpUtils;
@@ -19,9 +22,17 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import static io.github.biezhi.wechat.utils.WeChatUtils.printSystemInfo;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * 微信机器人
@@ -81,6 +92,7 @@ public class WeChatBot {
     private final Map<MsgType, List<Invoke>> mapping = new HashMap<>(8);
 
     public WeChatBot(Builder builder) {
+		printSystemInfo();
         this.config = builder.config;
         this.botClient = builder.botClient;
         this.session = new LoginSession();
@@ -155,8 +167,14 @@ public class WeChatBot {
                 invokes.add(new Invoke(method, Arrays.asList(bind.accountType()), msgType));
                 mapping.put(msgType, invokes);
             }
-            log.info("绑定消息监听函数 [{}] => {}", method.getName(), msgTypes);
         }
+
+		Map<MsgType, String> binderMap = mapping.entrySet()
+												.stream()
+												.collect(toMap(Map.Entry::getKey, entry -> Arrays.toString(entry.getValue()
+																												.stream()
+																												.map(e -> e.getMethod().getName()).toArray())));
+		log.info("Listener Binding: {}", WeChatUtils.toJson(binderMap));
     }
 
     /**
@@ -254,8 +272,7 @@ public class WeChatBot {
      * 启动微信监听
      */
     public void start() {
-        this.api = new WeChatApiImpl(this);
-        log.info("wechat-bot: {}", Constant.VERSION);
+		this.api = new WeChatApiImpl(this);
         api.login(config.autoLogin());
 
         Thread msgHandle = new Thread(() -> {
@@ -276,7 +293,7 @@ public class WeChatBot {
         this.other();
     }
 
-    /**
+	/**
      * 启动后主线程干的事，子类可重写
      */
     protected void other() {

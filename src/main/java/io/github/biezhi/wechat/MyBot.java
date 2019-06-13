@@ -65,7 +65,7 @@ public class MyBot extends WeChatBot {
     }*/
 
     public static void main(String[] args) {
-        new MyBot(Config.me().autoLogin(true).showTerminal(false)).start();
+        new MyBot(Config.me()).start();
     }
 
 }
