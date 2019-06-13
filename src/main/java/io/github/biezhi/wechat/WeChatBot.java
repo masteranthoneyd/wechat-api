@@ -308,6 +308,7 @@ public class WeChatBot {
             }
             DateUtils.sleep(100);
         }
+        System.exit(0);
     }
 
     /**

@@ -201,10 +201,10 @@ public class WeChatUtils {
 				"     \\/  \\/ \\___|\\___|_| |_|\\__,_|\\__| |____/ \\___/ \\__|\n" +
 				"                                                        \n" +
 				"                                                        \n");
-		log.info("Wechat Bot Version:	 {}", Constant.VERSION);
-		log.info("Java Version:			 {}", getProperty("java.version"));
-		log.info("Operating System :	 {}", getProperty("os.name") + " " + getProperty("os.arch") + " " + System.getProperty("os.version"));
-		log.info("User Name:			 {}", getProperty("user.name"));
+		log.info("Wechat Bot Version: {}", Constant.VERSION);
+		log.info("Java Version:	      {}", getProperty("java.version"));
+		log.info("Operating System :  {}", getProperty("os.name") + " " + getProperty("os.arch") + " " + System.getProperty("os.version"));
+		log.info("User Name:          {}", getProperty("user.name"));
 	}
 
 }
