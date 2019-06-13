@@ -44,6 +44,9 @@ public class MyBot extends WeChatBot {
         if (StringUtils.isNotEmpty(message.getName())) {
             log.info("接收到好友 [{}] 的消息: {}", message.getName(), message.getText());
 			log.info("raw: {}", WeChatUtils.toPrettyJson(message.getRaw()));
+			if (message.getText().equals("拉我")) {
+				this.api().inviteJoinGroup(message.getFromUserName(), this.config().get(Config.CONF_GROUP_USERNAME));
+			}
             // this.api().sendText(message.getFromUserName(), "自动回复: " + message.getText());
 //            this.api().sendFile("战斗型美少女", "/Users/biezhi/Desktop/Hot_Spots_blade2.0.4_alpha1.html");
         }

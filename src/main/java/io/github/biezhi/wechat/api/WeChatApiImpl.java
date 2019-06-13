@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.github.biezhi.wechat.WeChatBot;
 import io.github.biezhi.wechat.api.client.BotClient;
+import io.github.biezhi.wechat.api.constant.Config;
 import io.github.biezhi.wechat.api.constant.Constant;
 import io.github.biezhi.wechat.api.constant.StateCode;
 import io.github.biezhi.wechat.api.enums.AccountType;
@@ -170,12 +171,34 @@ public class WeChatApiImpl implements WeChatApi {
         this.startRevive();
         this.logging = false;
 		this.init = true;
-		log.info("初始化完毕, 好友列表: " + toPrettyJson(contactList));
-		log.info("群列表: " + toPrettyJson(groupList));
-		log.info("自己: " + toPrettyJson(bot.session().getAccount()));
-    }
 
-    /**
+		initCustomConfig();
+	}
+
+	private void initCustomConfig() {
+		boolean initCustom = false;
+		Config config = bot.config();
+		String customGroupName = config.get(Config.CONF_GROUP_NAME);
+		for (Account account : groupList) {
+			if (account.getNickName().equals(customGroupName)) {
+				log.info("群 [{}] username: {}", customGroupName, account.getUserName());
+				config.set(Config.CONF_GROUP_USERNAME, account.getUserName());
+				break;
+			}
+		}
+		Account lover = getAccountByName(config.get(Config.CONF_LOVER_NICKNAME));
+		if (lover != null) {
+			log.info("lover [{}] username: {}", config.get(Config.CONF_LOVER_NICKNAME), lover.getUserName());
+			config.set(Config.CONF_LOVER_USERNAME, lover.getUserName());
+			initCustom = true;
+		}
+		if (!initCustom) {
+			log.error("Init custom properties fail, system exit");
+			System.exit(0);
+		}
+	}
+
+	/**
      * 获取UUID
      *
      * @return 返回uuid
@@ -454,6 +477,7 @@ public class WeChatApiImpl implements WeChatApi {
         this.client.cookies().clear();
         String file = bot.config().assetsDir() + "/login.json";
         new File(file).delete();
+        System.exit(0);
     }
 
     /**
@@ -675,6 +699,7 @@ public class WeChatApiImpl implements WeChatApi {
                 .add("ChatRoomName", group)
                 .add("BaseRequest", bot.session().getBaseRequest())
         );
+        log.info("拉人进群返回报文: " + response);
         return null != response && response.success();
     }
 
@@ -864,15 +889,17 @@ public class WeChatApiImpl implements WeChatApi {
             // 系统消息
             case SYSTEM:
             	log.info("系统消息: {}", WeChatUtils.toJson(message));
-				if (fromAccount != null && isNotEmpty(message.getContent())) {
-					Matcher modifyGroupNameMatcher = MODIFY_GROUP_NAME_PATTERN.matcher(message.getContent());
-					if (modifyGroupNameMatcher.find()) {
-						fromAccount.setNickName(modifyGroupNameMatcher.group(1));
-						break;
+				if (isNotEmpty(message.getContent())) {
+					if (fromAccount != null) {
+						Matcher modifyGroupNameMatcher = MODIFY_GROUP_NAME_PATTERN.matcher(message.getContent());
+						if (modifyGroupNameMatcher.find()) {
+							fromAccount.setNickName(modifyGroupNameMatcher.group(1));
+							break;
+						}
 					}
 					Matcher inviteFriendMatcher = INVITE_FRIEND_PATTERN.matcher(message.getContent());
 					if (inviteFriendMatcher.find()) {
-						log.info("邀请了好友: {} 进群", modifyGroupNameMatcher.group(1));
+						log.info("邀请了好友: {} 进群", inviteFriendMatcher.group(1));
 						break;
 					}
 				}

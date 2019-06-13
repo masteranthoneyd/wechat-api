@@ -323,7 +323,7 @@ public class WeChatBot {
 
     public static final class Builder {
 
-        private Config config = Config.me();
+        private Config config;
         private BotClient    botClient;
         private OkHttpClient okHttpClient;
 

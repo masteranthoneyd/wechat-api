@@ -1,11 +1,17 @@
 package io.github.biezhi.wechat.api.constant;
 
-import io.github.biezhi.wechat.exception.WeChatException;
+import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
-import static io.github.biezhi.wechat.api.constant.Constant.*;
+import static java.net.URLDecoder.decode;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * 微信API配置
@@ -13,9 +19,10 @@ import static io.github.biezhi.wechat.api.constant.Constant.*;
  * @author biezhi
  * @date 2018/1/18
  */
+@Slf4j
 public class Config {
 
-    /**
+	/**
      * 资源存储的文件夹，包括图片、视频、音频
      */
     private static final String CONF_ASSETS_DIR         = "wechat.assets-path";
@@ -45,10 +52,23 @@ public class Config {
     private static final String CONF_AUTO_ADDFRIEND         = "wechat.auto-addfriend";
     private static final String CONF_AUTO_ADDFRIEND_DEFAULT = "false";
 
-    private Properties props = new Properties();
+	/**
+	 * 定制化配置
+	 */
+	public static final String CONF_GROUP_NAME = "group.name";
+	public static final String CONF_GROUP_USERNAME = "group.username";
+	public static final String CONF_LOVER_NICKNAME = "lover.nickname";
+	public static final String CONF_LOVER_USERNAME = "lover.username";
+
+	public String currentExecJarPath;
+
+
+	private Properties props = new Properties();
 
     public static Config me() {
-        return new Config();
+		Config load = new Config().load("config.properties").load("wechat.properties");
+		log.info("Property load: {}", load.props);
+		return load;
     }
 
     /**
@@ -57,15 +77,46 @@ public class Config {
      * @param filePath
      * @return
      */
-    public static Config load(String filePath) {
-        Config config = new Config();
-        try (final InputStream stream = Config.class.getResourceAsStream(filePath)) {
-            config.props.load(stream);
-        } catch (Exception e) {
-            throw new WeChatException("加载配置文件出错", e);
-        }
-        return config;
+    public Config load(String filePath) {
+		InputStream in = null;
+		InputStreamReader reader = null;
+		try {
+			String pathGetClass = getCurrentJarExecPath();
+			File file = new File(pathGetClass + filePath);
+			in = file.exists() ? new FileInputStream(file) : getClass().getClassLoader().getResourceAsStream(filePath);
+			assert in != null;
+			reader = new InputStreamReader(in, UTF_8);
+			props.load(reader);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+				if (reader != null) {
+					reader.close();
+				}
+			} catch (IOException e) {
+				log.error("Config load error: ", e);
+			}
+		}
+        return this;
     }
+
+	private String getCurrentJarExecPath() throws UnsupportedEncodingException {
+		if (currentExecJarPath != null) {
+			return currentExecJarPath;
+		}
+		String pathGetClass = decode(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath(), UTF_8.toString());
+		int lastIndex = pathGetClass.lastIndexOf(File.separator) + 1;
+		currentExecJarPath = pathGetClass.substring(0, lastIndex);
+		return currentExecJarPath;
+	}
+
+	public void set(String key, String value) {
+		props.setProperty(key, value);
+	}
 
     public String get(String key) {
         return props.getProperty(key);
