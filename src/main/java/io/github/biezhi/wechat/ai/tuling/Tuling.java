@@ -24,7 +24,7 @@ public class Tuling {
 		try {
 			Request.Builder builder = new Request.Builder();
 			RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=UTF-8"),
-					WeChatUtils.toJson(TulingReq.of(message.getText(), message.getFromUserName())));
+					WeChatUtils.toJson(TulingReq.of(message.getText(), message.getGroupMsgOwner().substring(1, 10))));
 			Request request = builder.url("http://openapi.tuling123.com/openapi/api/v2")
 									 .post(requestBody)
 									 .build();

@@ -11,6 +11,7 @@ import io.github.biezhi.wechat.api.enums.AccountType;
 import io.github.biezhi.wechat.api.enums.ApiURL;
 import io.github.biezhi.wechat.api.enums.RetCode;
 import io.github.biezhi.wechat.api.model.*;
+import io.github.biezhi.wechat.api.model.WeChatMessage.WeChatMessageBuilder;
 import io.github.biezhi.wechat.api.request.BaseRequest;
 import io.github.biezhi.wechat.api.request.FileRequest;
 import io.github.biezhi.wechat.api.request.JsonRequest;
@@ -233,7 +234,7 @@ public class WeChatApiImpl implements WeChatApi {
 
 		InputStream inputStream = fileResponse.getInputStream();
 		File qrCode = WeChatUtils.saveFile(inputStream, imgDir, "qrcode.jpeg");
-		DateUtils.sleep(300);
+		DateUtils.sleep(1000);
 		try {
 			QRCodeUtils.showQrCode(qrCode, openQrCode);
 		} catch (Exception e) {
@@ -815,23 +816,26 @@ public class WeChatApiImpl implements WeChatApi {
             return null;
         }
 
+		String groupMsgOwner = null;
         if (message.isGroup()) {
             if (content.contains(GROUP_BR)) {
+				groupMsgOwner = content.substring(0, content.indexOf(GROUP_BR));
                 content = content.substring(content.indexOf(GROUP_BR) + 6);
             }
         }
 
         content = WeChatUtils.formatMsg(content);
 
-        WeChatMessage.WeChatMessageBuilder weChatMessageBuilder = WeChatMessage.builder()
-                .raw(message)
-                .id(message.getId())
-                .fromUserName(message.getFromUserName())
-                .toUserName(message.getToUserName())
-                .mineUserName(bot.session().getUserName())
-                .mineNickName(bot.session().getNickName())
-                .msgType(message.msgType())
-                .text(content);
+		WeChatMessageBuilder weChatMessageBuilder = WeChatMessage.builder()
+																 .raw(message)
+																 .id(msgId)
+																 .fromUserName(message.getFromUserName())
+																 .toUserName(message.getToUserName())
+																 .mineUserName(bot.session().getUserName())
+																 .mineNickName(bot.session().getNickName())
+																 .msgType(message.msgType())
+																 .text(content)
+																 .groupMsgOwner(groupMsgOwner);
 
         Account fromAccount = this.getAccountById(message.getFromUserName());
         if (null == fromAccount) {

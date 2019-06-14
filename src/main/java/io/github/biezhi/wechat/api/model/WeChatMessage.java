@@ -99,6 +99,11 @@ public class WeChatMessage {
      */
     private MsgType msgType;
 
+	/**
+	 * 群消息发送者
+	 */
+	private String groupMsgOwner;
+
     /**
      * 获取发送人姓名如果有备注则优先显示备注，否则显示昵称
      *
