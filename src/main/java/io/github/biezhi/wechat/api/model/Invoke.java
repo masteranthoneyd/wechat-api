@@ -47,10 +47,8 @@ public class Invoke {
                 return;
             }
             Account account = bot.api().getAccountById(message.getFromUserName());
-            // TODO: 空 account 处理
             if (null == account) {
-                INVOKED_MSG.add(message.getId());
-                method.invoke(bot, message);
+                log.warn("{} not found in map, message ignore", message.getFromUserName());
                 return;
             }
             if (msgType == MsgType.ALL || msgType == message.getMsgType()) {

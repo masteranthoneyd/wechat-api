@@ -179,11 +179,11 @@ public class WeChatApiImpl implements WeChatApi {
 	private void initCustomConfig() {
 		boolean initCustom = false;
 		Config config = bot.config();
-		String customGroupName = config.get(Config.CONF_GROUP_NAME);
+		String customGroupName = config.groupName();
 		for (Account account : groupList) {
 			if (account.getNickName().equals(customGroupName)) {
 				log.info("group [{}] username: {}", customGroupName, account.getUserName());
-				config.set(Config.CONF_GROUP_USERNAME, account.getUserName());
+				config.groupUserName(account.getUserName());
 				break;
 			}
 		}
@@ -569,6 +569,9 @@ public class WeChatApiImpl implements WeChatApi {
 			if (groupAccount != null && groupAccount.size() == 1) {
 				account = groupAccount.get(0);
 				accountMap.put(account.getUserName(), account);
+				if (StringUtils.isEmpty(this.bot.config().groupUserName())) {
+					bot.config().groupUserName(account.getUserName());
+				}
 			} else {
 				account = new Account();
 				account.setUserName(id);
@@ -845,7 +848,7 @@ public class WeChatApiImpl implements WeChatApi {
             case TEXT:
                 // 被艾特的消息
                 if (content.startsWith("@" + bot.session().getNickName())) {
-                    content = content.substring(content.indexOf(" "));
+                    content = content.substring(content.indexOf(" ") + 1);
 					weChatMessageBuilder.isAtMe(true);
                 }
                 // 位置消息

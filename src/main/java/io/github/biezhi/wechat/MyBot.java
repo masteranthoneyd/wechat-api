@@ -9,7 +9,7 @@ import io.github.biezhi.wechat.utils.StringUtils;
 import io.github.biezhi.wechat.utils.WeChatUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import static io.github.biezhi.wechat.api.constant.Config.CONF_GROUP_USERNAME;
+import java.io.IOException;
 
 /**
  * 我的小机器人
@@ -20,9 +20,7 @@ import static io.github.biezhi.wechat.api.constant.Config.CONF_GROUP_USERNAME;
 @Slf4j
 public class MyBot extends WeChatBot {
 
-	private String loverNickName;
-
-    public MyBot(Config config) {
+	public MyBot(Config config) {
         super(config);
     }
 
@@ -34,17 +32,13 @@ public class MyBot extends WeChatBot {
     @Bind(msgType = MsgType.TEXT, accountType = AccountType.TYPE_GROUP)
     public void groupMessage(WeChatMessage message) {
         log.info("接收到群 [{}] 的消息: {}", message.getName(), message.getText());
-        log.info("raw: {}", WeChatUtils.toPrettyJson(message.getRaw()));
-		if (this.config().get(CONF_GROUP_USERNAME).equals(message.getFromUserName())) {
-			this.api()
-				.sendText(message.getFromUserName(),
-						String.format("@%s %s", getLoverNickName(), message.getText() + "吗"));
+		if (autoReply4Group(message)) {
+			this.api().sendText(message.getFromUserName(), message.getText() + "吗");
 		}
     }
 
-	private String getLoverNickName() {
-    	return loverNickName != null ? loverNickName :
-				(loverNickName = this.api().getAccountById(this.config().loverUserName()).getNickName());
+	private boolean autoReply4Group(WeChatMessage message) {
+		return this.config().groupUserName().equals(message.getFromUserName()) && message.isAtMe();
 	}
 
 	/**
@@ -57,9 +51,9 @@ public class MyBot extends WeChatBot {
         if (StringUtils.isNotEmpty(message.getName())) {
             log.info("接收到好友 [{}] 的消息: {}", message.getName(), message.getText());
 			log.info("raw: {}", WeChatUtils.toPrettyJson(message.getRaw()));
-			if (message.getText().equals("拉我")) {
+			/*if (message.getText().equals("拉我")) {
 				this.api().inviteJoinGroup(message.getFromUserName(), this.config().get(CONF_GROUP_USERNAME));
-			}
+			}*/
             // this.api().sendText(message.getFromUserName(), "自动回复: " + message.getText());
 //            this.api().sendFile("战斗型美少女", "/Users/biezhi/Desktop/Hot_Spots_blade2.0.4_alpha1.html");
         }
@@ -77,8 +71,15 @@ public class MyBot extends WeChatBot {
         }
     }*/
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         new MyBot(Config.me()).start();
-    }
+
+		/*MyBot myBot = new MyBot(Config.me());
+		OkHttpClient okHttpClient = myBot.client().nativeOkHttpClient();
+		String send = Tuling.send(" 最怕空气突然安静", okHttpClient);
+		System.out.println(send);*/
+
+	}
+
 
 }

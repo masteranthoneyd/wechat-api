@@ -178,4 +178,16 @@ public class Config {
 		return props.getProperty(CONF_LOVER_USERNAME);
 	}
 
+	public String groupName() {
+		return props.getProperty(CONF_GROUP_NAME);
+	}
+
+	public String groupUserName() {
+		return props.getProperty(CONF_GROUP_USERNAME);
+	}
+
+	public void groupUserName(String groupUsername) {
+		props.setProperty(CONF_GROUP_USERNAME, groupUsername);
+	}
+
 }

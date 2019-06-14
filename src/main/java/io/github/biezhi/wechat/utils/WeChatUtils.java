@@ -18,7 +18,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.FileNameMap;
 import java.net.URLConnection;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -187,8 +187,8 @@ public class WeChatUtils {
     }
 
     public static int random(int min, int max) {
-        Random random = new Random();
-        return random.nextInt(max) % (max - min + 1) + min;
+		ThreadLocalRandom random = ThreadLocalRandom.current();
+		return random.nextInt(max) % (max - min + 1) + min;
     }
 
 	public static void printSystemInfo() {

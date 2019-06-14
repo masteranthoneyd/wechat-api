@@ -7,12 +7,25 @@ import io.github.biezhi.wechat.api.response.FileResponse;
 import io.github.biezhi.wechat.exception.WeChatException;
 import io.github.biezhi.wechat.utils.WeChatUtils;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
+import okhttp3.Call;
+import okhttp3.Cookie;
+import okhttp3.CookieJar;
+import okhttp3.FormBody;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +50,10 @@ public class BotClient {
         System.setProperty("https.protocols", "TLSv1");
         System.setProperty("jsse.enableSNIExtension", "false");
     }
+
+	public OkHttpClient nativeOkHttpClient() {
+		return client;
+	}
 
     /**
      * 重新恢复Cookie
