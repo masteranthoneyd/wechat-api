@@ -53,8 +53,6 @@ public class WeChatApiImpl implements WeChatApi {
 	private static final Pattern CHECK_LOGIN_PATTERN = compile("window.code=(\\d+)");
 	private static final Pattern PROCESS_LOGIN_PATTERN = compile("window.redirect_uri=\"(\\S+)\";");
 	private static final Pattern SYNC_CHECK_PATTERN = compile("window.synccheck=\\{retcode:\"(\\d+)\",selector:\"(\\d+)\"}");
-	private static final Pattern MODIFY_GROUP_NAME_PATTERN = Pattern.compile("修改群名为“(.*)”");
-	private static final Pattern INVITE_FRIEND_PATTERN = Pattern.compile("邀请\"(.*)\"加入了群聊");
 
 	private String uuid;
 	private boolean logging;
@@ -703,7 +701,6 @@ public class WeChatApiImpl implements WeChatApi {
                 .add("ChatRoomName", group)
                 .add("BaseRequest", bot.session().getBaseRequest())
         );
-        log.info("拉人进群返回报文: " + response);
         return null != response && response.success();
     }
 
@@ -896,20 +893,7 @@ public class WeChatApiImpl implements WeChatApi {
             // 系统消息
             case SYSTEM:
             	log.info("系统消息: {}", WeChatUtils.toJson(message));
-				if (isNotEmpty(message.getContent())) {
-					if (fromAccount != null) {
-						Matcher modifyGroupNameMatcher = MODIFY_GROUP_NAME_PATTERN.matcher(message.getContent());
-						if (modifyGroupNameMatcher.find()) {
-							fromAccount.setNickName(modifyGroupNameMatcher.group(1));
-							break;
-						}
-					}
-					Matcher inviteFriendMatcher = INVITE_FRIEND_PATTERN.matcher(message.getContent());
-					if (inviteFriendMatcher.find()) {
-						log.info("邀请了好友: {} 进群", inviteFriendMatcher.group(1));
-						break;
-					}
-				}
+
 				break;
 			// 撤回消息
             case REVOKE_MSG:

@@ -5,11 +5,16 @@ import io.github.biezhi.wechat.api.annotation.Bind;
 import io.github.biezhi.wechat.api.constant.Config;
 import io.github.biezhi.wechat.api.enums.AccountType;
 import io.github.biezhi.wechat.api.enums.MsgType;
+import io.github.biezhi.wechat.api.model.Account;
 import io.github.biezhi.wechat.api.model.WeChatMessage;
 import io.github.biezhi.wechat.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static io.github.biezhi.wechat.utils.StringUtils.isNotEmpty;
 
 /**
  * 我的小机器人
@@ -19,6 +24,9 @@ import java.io.IOException;
  */
 @Slf4j
 public class MyBot extends WeChatBot {
+
+	private static final Pattern MODIFY_GROUP_NAME_PATTERN = Pattern.compile("修改群名为“(.*)”");
+	private static final Pattern INVITE_FRIEND_PATTERN = Pattern.compile("邀请\"(.*)\"加入了群聊");
 
 	public MyBot(Config config) {
         super(config);
@@ -44,6 +52,29 @@ public class MyBot extends WeChatBot {
 
 	private boolean autoReply4Group(WeChatMessage message) {
 		return this.config().groupUserName().equals(message.getFromUserName()) && message.isAtMe();
+	}
+
+	@Bind(msgType = MsgType.SYSTEM, accountType = AccountType.TYPE_GROUP)
+	public void handlerSystem(WeChatMessage message) {
+		String content = message.getRaw().getContent();
+		if (isNotEmpty(content)) {
+			Account fromAccount = this.api().getAccountById(message.getFromUserName());
+			if (fromAccount != null) {
+				Matcher modifyGroupNameMatcher = MODIFY_GROUP_NAME_PATTERN.matcher(content);
+				if (modifyGroupNameMatcher.find()) {
+					fromAccount.setNickName(modifyGroupNameMatcher.group(1));
+					return;
+				}
+			}
+			Matcher inviteFriendMatcher = INVITE_FRIEND_PATTERN.matcher(content);
+			if (inviteFriendMatcher.find()) {
+				String newGroupMember = inviteFriendMatcher.group(1);
+				Account account = this.api().getAccountByName(newGroupMember);
+				this.api()
+					.sendText(message.getFromUserName(), "【德玛西亚】@ " + (account == null ? newGroupMember : account.getNickName()) + "\n 欢迎加入坑");
+				log.info("邀请了好友: {} 进群", newGroupMember);
+			}
+		}
 	}
 
 	/**
