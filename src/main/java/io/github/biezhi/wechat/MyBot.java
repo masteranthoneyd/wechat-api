@@ -1,5 +1,6 @@
 package io.github.biezhi.wechat;
 
+import io.github.biezhi.wechat.ai.tuling.Tuling;
 import io.github.biezhi.wechat.api.annotation.Bind;
 import io.github.biezhi.wechat.api.constant.Config;
 import io.github.biezhi.wechat.api.enums.AccountType;
@@ -32,10 +33,16 @@ public class MyBot extends WeChatBot {
     @Bind(msgType = MsgType.TEXT, accountType = AccountType.TYPE_GROUP)
     public void groupMessage(WeChatMessage message) {
         log.info("接收到群 [{}] 的消息: {}", message.getName(), message.getText());
+        log.info("raw: {}", message.getRaw());
 		if (autoReply4Group(message)) {
-			this.api().sendText(message.getFromUserName(), message.getText() + "吗");
+			autoReplyByAI(message);
 		}
     }
+
+	private void autoReplyByAI(WeChatMessage message) {
+		this.api().sendText(message.getFromUserName(),
+				"【我是盖伦】" + Tuling.send(message, this.client().nativeOkHttpClient()));
+	}
 
 	private boolean autoReply4Group(WeChatMessage message) {
 		return this.config().groupUserName().equals(message.getFromUserName()) && message.isAtMe();

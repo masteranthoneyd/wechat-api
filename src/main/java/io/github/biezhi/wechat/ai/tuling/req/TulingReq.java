@@ -13,9 +13,9 @@ import lombok.experimental.Accessors;
 public class TulingReq {
 	private int reqType = 0;
 	private Perception perception;
-	private UserInfo userInfo = new UserInfo();
+	private UserInfo userInfo;
 
-	public static TulingReq of(String text) {
-		return new TulingReq().setPerception(Perception.of(text));
+	public static TulingReq of(String text, String userId) {
+		return new TulingReq().setPerception(Perception.of(text)).setUserInfo(UserInfo.of(userId));
 	}
 }

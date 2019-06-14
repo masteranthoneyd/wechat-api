@@ -2,6 +2,7 @@ package io.github.biezhi.wechat.ai.tuling;
 
 import io.github.biezhi.wechat.ai.tuling.req.TulingReq;
 import io.github.biezhi.wechat.ai.tuling.resp.TulingResp;
+import io.github.biezhi.wechat.api.model.WeChatMessage;
 import io.github.biezhi.wechat.utils.WeChatUtils;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -19,11 +20,11 @@ import java.io.IOException;
  */
 public class Tuling {
 
-	public static String send(String text, OkHttpClient client) {
+	public static String send(WeChatMessage message, OkHttpClient client) {
 		try {
 			Request.Builder builder = new Request.Builder();
 			RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=UTF-8"),
-					WeChatUtils.toJson(TulingReq.of(text)));
+					WeChatUtils.toJson(TulingReq.of(message.getText(), message.getFromUserName())));
 			Request request = builder.url("http://openapi.tuling123.com/openapi/api/v2")
 									 .post(requestBody)
 									 .build();
