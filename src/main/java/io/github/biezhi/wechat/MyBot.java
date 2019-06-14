@@ -39,7 +39,7 @@ public class MyBot extends WeChatBot {
 
 	private void autoReplyByAI(WeChatMessage message) {
 		this.api().sendText(message.getFromUserName(),
-				"【我是盖伦】" + Tuling.send(message, this.client().nativeOkHttpClient()));
+				"【德玛西亚】" + Tuling.send(message, this.client().nativeOkHttpClient()));
 	}
 
 	private boolean autoReply4Group(WeChatMessage message) {
