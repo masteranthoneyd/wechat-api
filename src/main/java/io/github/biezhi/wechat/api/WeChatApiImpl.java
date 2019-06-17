@@ -4,21 +4,40 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.github.biezhi.wechat.WeChatBot;
 import io.github.biezhi.wechat.api.client.BotClient;
-import io.github.biezhi.wechat.api.constant.Config;
 import io.github.biezhi.wechat.api.constant.Constant;
 import io.github.biezhi.wechat.api.constant.StateCode;
+import io.github.biezhi.wechat.api.constant.custom.CustomConfig;
+import io.github.biezhi.wechat.api.constant.custom.LoverPrattle;
 import io.github.biezhi.wechat.api.enums.AccountType;
 import io.github.biezhi.wechat.api.enums.ApiURL;
 import io.github.biezhi.wechat.api.enums.RetCode;
-import io.github.biezhi.wechat.api.model.*;
+import io.github.biezhi.wechat.api.model.Account;
+import io.github.biezhi.wechat.api.model.DownLoad;
+import io.github.biezhi.wechat.api.model.HotReload;
+import io.github.biezhi.wechat.api.model.LoginSession;
+import io.github.biezhi.wechat.api.model.Message;
+import io.github.biezhi.wechat.api.model.Recommend;
+import io.github.biezhi.wechat.api.model.SendMessage;
+import io.github.biezhi.wechat.api.model.SyncCheckRet;
+import io.github.biezhi.wechat.api.model.SyncKey;
+import io.github.biezhi.wechat.api.model.WeChatMessage;
 import io.github.biezhi.wechat.api.model.WeChatMessage.WeChatMessageBuilder;
 import io.github.biezhi.wechat.api.request.BaseRequest;
 import io.github.biezhi.wechat.api.request.FileRequest;
 import io.github.biezhi.wechat.api.request.JsonRequest;
 import io.github.biezhi.wechat.api.request.StringRequest;
-import io.github.biezhi.wechat.api.response.*;
+import io.github.biezhi.wechat.api.response.ApiResponse;
+import io.github.biezhi.wechat.api.response.FileResponse;
+import io.github.biezhi.wechat.api.response.JsonResponse;
+import io.github.biezhi.wechat.api.response.MediaResponse;
+import io.github.biezhi.wechat.api.response.WebInitResponse;
+import io.github.biezhi.wechat.api.response.WebSyncResponse;
 import io.github.biezhi.wechat.exception.WeChatException;
-import io.github.biezhi.wechat.utils.*;
+import io.github.biezhi.wechat.utils.DateUtils;
+import io.github.biezhi.wechat.utils.MD5Checksum;
+import io.github.biezhi.wechat.utils.QRCodeUtils;
+import io.github.biezhi.wechat.utils.StringUtils;
+import io.github.biezhi.wechat.utils.WeChatUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
@@ -30,11 +49,24 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static io.github.biezhi.wechat.api.constant.Constant.*;
+import static io.github.biezhi.wechat.api.constant.Constant.BASE_URL;
+import static io.github.biezhi.wechat.api.constant.Constant.FILE_URL;
+import static io.github.biezhi.wechat.api.constant.Constant.GROUP_BR;
+import static io.github.biezhi.wechat.api.constant.Constant.GROUP_IDENTIFY;
+import static io.github.biezhi.wechat.api.constant.Constant.INDEX_URL;
+import static io.github.biezhi.wechat.api.constant.Constant.LOCATION_IDENTIFY;
+import static io.github.biezhi.wechat.api.constant.Constant.WEB_PUSH_URL;
 import static io.github.biezhi.wechat.utils.StringUtils.isNotEmpty;
 import static io.github.biezhi.wechat.utils.WeChatUtils.toPrettyJson;
 import static java.util.Collections.emptyList;
@@ -95,6 +127,10 @@ public class WeChatApiImpl implements WeChatApi {
         this.bot = bot;
         this.client = bot.client();
     }
+
+	public CustomConfig customConfig() {
+		return this.bot.customConfig();
+	}
 
     /**
      * 自动登录
@@ -177,19 +213,22 @@ public class WeChatApiImpl implements WeChatApi {
 
 	private void initCustomConfig() {
 		boolean initCustom = false;
-		Config config = bot.config();
-		String customGroupName = config.groupName();
+
+		Set<String> nickNames = customConfig().getAutoReply().getNickNames();
+		Set<String> userNameSet = customConfig().getAutoReply().getUserNameSet();
 		for (Account account : groupList) {
-			if (account.getNickName().equals(customGroupName)) {
-				log.info("group [{}] username: {}", customGroupName, account.getUserName());
-				config.groupUserName(account.getUserName());
+			if (nickNames.contains(account.getNickName())) {
+				log.info("group [{}] matched, username: {}", account.getNickName(), account.getUserName());
+				userNameSet.add(account.getUserName());
 				break;
 			}
 		}
-		Account lover = getAccountByName(config.get(Config.CONF_LOVER_NICKNAME));
+
+		LoverPrattle loverPrattle = customConfig().getLoverPrattle();
+		Account lover = getAccountByName(loverPrattle.getNickName());
 		if (lover != null) {
-			log.info("lover [{}] username: {}", config.get(Config.CONF_LOVER_NICKNAME), lover.getUserName());
-			config.set(Config.CONF_LOVER_USERNAME, lover.getUserName());
+			log.info("lover [{}] matched, username: {}", loverPrattle.getNickName(), lover.getUserName());
+			loverPrattle.setLoverUserName(lover.getUserName());
 			initCustom = true;
 		}
 		if (!initCustom) {
@@ -568,8 +607,9 @@ public class WeChatApiImpl implements WeChatApi {
 			if (groupAccount != null && groupAccount.size() == 1) {
 				account = groupAccount.get(0);
 				accountMap.put(account.getUserName(), account);
-				if (StringUtils.isEmpty(this.bot.config().groupUserName())) {
-					bot.config().groupUserName(account.getUserName());
+				Set<String> nickNames = customConfig().getAutoReply().getNickNames();
+				if (nickNames.contains(account.getNickName())) {
+					nickNames.add(account.getUserName());
 				}
 			} else {
 				account = new Account();

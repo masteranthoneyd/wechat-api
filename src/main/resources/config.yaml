@@ -1,0 +1,13 @@
+loverPrattle:
+  enable: true
+  cron: 1990-06-09
+  city: 广州
+  nickName: 悦
+  fallInLoveAt: 2015-01-01
+  sweetsWords: 来自星星的我
+
+autoReply:
+  enable: true
+  nickNames:
+    - Bot群456
+  prefix: 【德玛西亚】

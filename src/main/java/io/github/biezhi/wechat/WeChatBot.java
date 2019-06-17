@@ -5,6 +5,7 @@ import io.github.biezhi.wechat.api.WeChatApiImpl;
 import io.github.biezhi.wechat.api.annotation.Bind;
 import io.github.biezhi.wechat.api.client.BotClient;
 import io.github.biezhi.wechat.api.constant.Config;
+import io.github.biezhi.wechat.api.constant.custom.CustomConfig;
 import io.github.biezhi.wechat.api.enums.MsgType;
 import io.github.biezhi.wechat.api.model.Account;
 import io.github.biezhi.wechat.api.model.HotReload;
@@ -106,6 +107,10 @@ public class WeChatBot {
     public Config config() {
         return this.config;
     }
+
+	public CustomConfig customConfig() {
+		return this.config.getCustomConfig();
+	}
 
     public LoginSession session() {
         return session;
@@ -303,8 +308,6 @@ public class WeChatBot {
 				if ("quit".equals(text) || "exit".equals(text)) {
 					api.logout();
 					break;
-				} else {
-					WeChatBot.this.api.sendText(WeChatBot.this.config.loverUserName(), text);
 				}
 			}
 			DateUtils.sleep(1000);

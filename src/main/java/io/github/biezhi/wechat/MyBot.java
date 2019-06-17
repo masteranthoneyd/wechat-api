@@ -51,7 +51,11 @@ public class MyBot extends WeChatBot {
 	}
 
 	private boolean autoReply4Group(WeChatMessage message) {
-		return this.config().groupUserName().equals(message.getFromUserName()) && message.isAtMe();
+		return message.isAtMe() && containGroup(message);
+	}
+
+	private boolean containGroup(WeChatMessage message) {
+		return this.customConfig().getAutoReply().getUserNameSet().contains(message.getFromUserName());
 	}
 
 	@Bind(msgType = MsgType.SYSTEM, accountType = AccountType.TYPE_GROUP)
@@ -66,13 +70,16 @@ public class MyBot extends WeChatBot {
 					return;
 				}
 			}
-			Matcher inviteFriendMatcher = INVITE_FRIEND_PATTERN.matcher(content);
-			if (inviteFriendMatcher.find()) {
-				String newGroupMember = inviteFriendMatcher.group(1);
-				Account account = this.api().getAccountByName(newGroupMember);
-				this.api()
-					.sendText(message.getFromUserName(), "【德玛西亚】@ " + (account == null ? newGroupMember : account.getNickName()) + "\n 欢迎加入坑");
-				log.info("邀请了好友: {} 进群", newGroupMember);
+
+			if (containGroup(message)) {
+				Matcher inviteFriendMatcher = INVITE_FRIEND_PATTERN.matcher(content);
+				if (inviteFriendMatcher.find()) {
+					String newGroupMember = inviteFriendMatcher.group(1);
+					Account account = this.api().getAccountByName(newGroupMember);
+					this.api()
+						.sendText(message.getFromUserName(), "【德玛西亚】@ " + (account == null ? newGroupMember : account.getNickName()) + "\n 欢迎加入坑");
+					log.info("邀请了好友: {} 进群", newGroupMember);
+				}
 			}
 		}
 	}
@@ -86,9 +93,9 @@ public class MyBot extends WeChatBot {
     public void friendMessage(WeChatMessage message) {
         if (StringUtils.isNotEmpty(message.getName())) {
             log.info("接收到好友 [{}] 的消息: {}", message.getName(), message.getText());
-			if (message.getText().equals("拉我进群")) {
+			/*if (message.getText().equals("拉我进群")) {
 				this.api().inviteJoinGroup(message.getFromUserName(), this.config().groupUserName());
-			}
+			}*/
             // this.api().sendText(message.getFromUserName(), "自动回复: " + message.getText());
 //            this.api().sendFile("战斗型美少女", "/Users/biezhi/Desktop/Hot_Spots_blade2.0.4_alpha1.html");
         }

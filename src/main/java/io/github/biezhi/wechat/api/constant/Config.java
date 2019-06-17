@@ -1,6 +1,10 @@
 package io.github.biezhi.wechat.api.constant;
 
+import io.github.biezhi.wechat.api.constant.custom.CustomConfig;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -52,29 +56,51 @@ public class Config {
     private static final String CONF_AUTO_ADDFRIEND         = "wechat.auto-addfriend";
     private static final String CONF_AUTO_ADDFRIEND_DEFAULT = "false";
 
-	/**
-	 * 定制化配置
-	 */
-	public static final String CONF_GROUP_NAME = "group.name";
 	public static final String CONF_GROUP_USERNAME = "group.username";
-	public static final String CONF_LOVER_NICKNAME = "lover.nickname";
-	public static final String CONF_LOVER_USERNAME = "lover.username";
 
 	public String currentJarExecPath;
 
 
 	private Properties props = new Properties();
 
+	@Getter
+	private CustomConfig customConfig;
+
     public static Config me() {
-		Config load = new Config().load("config.properties", true)
-								  .load("wechat.properties", false);
+		Config load = new Config().load("wechat.properties", false);
+		load.loadCustomYaml("config.yaml");
 		if (log.isDebugEnabled()) {
 			log.debug("Property load: {}", load.props);
 		}
 		return load;
     }
 
-    /**
+	private void loadCustomYaml(String fileName) {
+		InputStream in = null;
+		try {
+			Yaml yaml = new Yaml(new Constructor(CustomConfig.class));
+			String pathGetClass = getCurrentJarExecPath();
+			File file = new File(pathGetClass + fileName);
+			if (!file.exists()) {
+				throw new FileNotFoundException(fileName + " is required!");
+			}
+			in = new FileInputStream(file);
+			this.customConfig = yaml.loadAs(in, CustomConfig.class);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+			} catch (IOException e) {
+				log.error("Config load error: ", e);
+			}
+		}
+
+	}
+
+	/**
      * 加载 ClassPath 下的配置文件
      *
      * @param filePath
@@ -89,7 +115,7 @@ public class Config {
 			File file = new File(pathGetClass + filePath);
 			boolean fileExists = file.exists();
 			if (require && !fileExists) {
-				throw new FileNotFoundException("config.properties is required!");
+				throw new FileNotFoundException(filePath + " is required!");
 			}
 			in = fileExists ? new FileInputStream(file) : getClass().getClassLoader().getResourceAsStream(filePath);
 			assert in != null;
@@ -174,20 +200,9 @@ public class Config {
         return Boolean.valueOf(props.getProperty(CONF_AUTO_LOGIN, CONF_AUTO_LOGIN_DEFAULT));
     }
 
-	public String loverUserName() {
-		return props.getProperty(CONF_LOVER_USERNAME);
-	}
-
-	public String groupName() {
-		return props.getProperty(CONF_GROUP_NAME);
-	}
 
 	public String groupUserName() {
 		return props.getProperty(CONF_GROUP_USERNAME);
-	}
-
-	public void groupUserName(String groupUsername) {
-		props.setProperty(CONF_GROUP_USERNAME, groupUsername);
 	}
 
 }
