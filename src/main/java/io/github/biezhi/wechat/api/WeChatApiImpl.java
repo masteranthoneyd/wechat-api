@@ -231,6 +231,7 @@ public class WeChatApiImpl implements WeChatApi {
 			loverPrattle.setLoverUserName(lover.getUserName());
 			initCustom = true;
 		}
+		log.info("Bot Initialized");
 		if (!initCustom) {
 			log.error("Init custom properties fail, system exit");
 			System.exit(0);

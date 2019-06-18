@@ -13,6 +13,7 @@ import io.github.biezhi.wechat.api.model.Invoke;
 import io.github.biezhi.wechat.api.model.LoginSession;
 import io.github.biezhi.wechat.api.model.WeChatMessage;
 import io.github.biezhi.wechat.exception.WeChatException;
+import io.github.biezhi.wechat.prattle.PrattleInfoReqUtil;
 import io.github.biezhi.wechat.utils.DateUtils;
 import io.github.biezhi.wechat.utils.OkHttpUtils;
 import io.github.biezhi.wechat.utils.WeChatUtils;
@@ -308,6 +309,12 @@ public class WeChatBot {
 				if ("quit".equals(text) || "exit".equals(text)) {
 					api.logout();
 					break;
+				} else {
+					Account account = api().getAccountByName("文件传输助手");
+					if (account != null) {
+						String prattle = PrattleInfoReqUtil.reducePrattle(this.customConfig().getLoverPrattle());
+						sendMsg(account.getUserName(), prattle);
+					}
 				}
 			}
 			DateUtils.sleep(1000);

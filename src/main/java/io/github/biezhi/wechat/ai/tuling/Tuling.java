@@ -38,7 +38,7 @@ public class Tuling {
 							 .getText();
 		} catch (IOException e) {
 			e.printStackTrace();
-			return "机器人发生故障啦~(≧▽≦)~";
+			return "机器人智障啦~(≧▽≦)~";
 		}
 	}
 }

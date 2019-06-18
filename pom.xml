@@ -66,6 +66,12 @@
             <version>2.8.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.47</version>
+        </dependency>
+
         <!-- emoji处理 -->
         <dependency>
             <groupId>com.vdurmont</groupId>
