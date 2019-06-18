@@ -104,6 +104,7 @@ public class PrattleInfoReqUtil {
 	public static String reducePrattle(LoverPrattle loverPrattle) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getCurrentDate())
+		  .append("\n")
 		  .append(getLoveDays(loverPrattle.getFallInLoveAt()))
 		  .append("\n\n")
 		  .append(getWeather(loverPrattle.getCity()))
