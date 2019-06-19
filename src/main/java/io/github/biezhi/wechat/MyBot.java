@@ -82,7 +82,7 @@ public class MyBot extends WeChatBot {
 					String newGroupMember = inviteFriendMatcher.group(1);
 					Account account = this.api().getAccountByName(newGroupMember);
 					this.api()
-						.sendText(message.getFromUserName(), getMessagePrefix() + "@ " + (account == null ? newGroupMember : account.getNickName()) + "\n 欢迎加入坑");
+						.sendText(message.getFromUserName(), getMessagePrefix() + "@ " + (account == null ? newGroupMember : account.getNickName()) + "\n\n 欢迎加入");
 					log.info("邀请了好友: {} 进群", newGroupMember);
 				}
 			}
