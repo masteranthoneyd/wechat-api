@@ -101,6 +101,10 @@ public class PrattleInfoReqUtil {
 		}
 	}
 
+	public static String getTail(String tail) {
+		return "        " + tail;
+	}
+
 	public static String reducePrattle(LoverPrattle loverPrattle) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getCurrentDate())
@@ -109,7 +113,9 @@ public class PrattleInfoReqUtil {
 		  .append(getWeather(loverPrattle.getCity()))
 		  .append("    ").append(getPoetry())
 		  .append("\n\n")
-		  .append(getPrattle());
+		  .append(getPrattle())
+		  .append("\n\n")
+		  .append(getTail(loverPrattle.getSweetsWords()));
 		return sb.toString();
 	}
 
