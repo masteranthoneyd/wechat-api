@@ -7,10 +7,11 @@ import io.github.biezhi.wechat.api.enums.AccountType;
 import io.github.biezhi.wechat.api.enums.MsgType;
 import io.github.biezhi.wechat.api.model.Account;
 import io.github.biezhi.wechat.api.model.WeChatMessage;
+import io.github.biezhi.wechat.job.PrattleJobEngine;
+import io.github.biezhi.wechat.prattle.PrattleInfoReqUtil;
 import io.github.biezhi.wechat.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,6 +31,7 @@ public class MyBot extends WeChatBot {
 
 	public MyBot(Config config) {
         super(config);
+		PrattleJobEngine.fire(this);
     }
 
     /**
@@ -106,10 +108,9 @@ public class MyBot extends WeChatBot {
         }
     }
 
-    /**
-     * 好友验证消息
-     *
-     */
+	/**
+	 * 好友验证消息
+	 */
 /*    @Bind(msgType = MsgType.ADD_FRIEND)
     public void addFriend(WeChatMessage message) {
         log.info("收到好友验证消息: {}", message.getText());
@@ -117,8 +118,15 @@ public class MyBot extends WeChatBot {
             this.api().verify(message.getRaw().getRecommend());
         }
     }*/
+	public void sendPrattle() {
+		Account account = api().getAccountByName("文件传输助手");
+		if (account != null) {
+			String prattle = PrattleInfoReqUtil.reducePrattle(this.customConfig().getLoverPrattle());
+			sendMsg(account.getUserName(), prattle);
+		}
+	}
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         new MyBot(Config.me()).start();
 	}
 

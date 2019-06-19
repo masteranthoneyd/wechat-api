@@ -1,6 +1,6 @@
 loverPrattle:
   enable: true
-  cron: 1990-06-09
+  cron: 0/10 * * * * ?
   city: 广州
   nickName: 悦
   fallInLoveAt: 2014-02-15
