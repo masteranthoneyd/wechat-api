@@ -47,11 +47,16 @@ public class MyBot extends WeChatBot {
 
 	private void autoReplyByAI(WeChatMessage message) {
 		this.api().sendText(message.getFromUserName(),
-				"【德玛西亚】" + Tuling.send(message, this.client().nativeOkHttpClient()));
+				getMessagePrefix() + Tuling.send(message, this.client().nativeOkHttpClient()));
+	}
+
+	private String getMessagePrefix() {
+		return this.customConfig().getAutoReply().getPrefix();
 	}
 
 	private boolean autoReply4Group(WeChatMessage message) {
-		return message.isAtMe() && containGroup(message);
+		return this.customConfig().getAutoReply().getEnable() &&
+				message.isAtMe() && containGroup(message);
 	}
 
 	private boolean containGroup(WeChatMessage message) {
@@ -77,7 +82,7 @@ public class MyBot extends WeChatBot {
 					String newGroupMember = inviteFriendMatcher.group(1);
 					Account account = this.api().getAccountByName(newGroupMember);
 					this.api()
-						.sendText(message.getFromUserName(), "【德玛西亚】@ " + (account == null ? newGroupMember : account.getNickName()) + "\n 欢迎加入坑");
+						.sendText(message.getFromUserName(), getMessagePrefix() + "@ " + (account == null ? newGroupMember : account.getNickName()) + "\n 欢迎加入坑");
 					log.info("邀请了好友: {} 进群", newGroupMember);
 				}
 			}
