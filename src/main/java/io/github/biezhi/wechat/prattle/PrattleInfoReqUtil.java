@@ -42,7 +42,7 @@ public class PrattleInfoReqUtil {
 				break;
 			}
 		}
-		return dateTimeFormatter.format(now) + " 星期" + k;
+		return dateTimeFormatter.format(now) + " 星期" + k + "\n";
 	}
 
 	public static String getLoveDays(String date) {
@@ -64,7 +64,7 @@ public class PrattleInfoReqUtil {
 			StringBuilder sb = new StringBuilder("今日天气").append("\n");
 			sb.append("    ").append(weather.getTemp()).append(" ").append(weather.getWeather()).append("\n")
 			  .append("    ").append(weather.getWindDirection()).append("风 ").append(weather.getWindPower()).append("\n")
-			  .append("    ").append("湿度 ").append(weather.getHumidity());
+			  .append("    ").append("湿度 ").append(weather.getHumidity()).append("\n");
 			return sb.toString();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -95,7 +95,7 @@ public class PrattleInfoReqUtil {
 		try {
 			Request request = new Request.Builder().url("https://api.lovelive.tools/api/SweetNothings")
 												   .build();
-			return "今日土味情话\n    " + okHttpClient.newCall(request).execute().body().string();
+			return "我想对你说:\n    " + okHttpClient.newCall(request).execute().body().string();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -104,7 +104,6 @@ public class PrattleInfoReqUtil {
 	public static String reducePrattle(LoverPrattle loverPrattle) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getCurrentDate())
-		  .append("\n")
 		  .append(getLoveDays(loverPrattle.getFallInLoveAt()))
 		  .append("\n\n")
 		  .append(getWeather(loverPrattle.getCity()))
