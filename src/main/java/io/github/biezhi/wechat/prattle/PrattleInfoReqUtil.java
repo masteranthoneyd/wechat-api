@@ -102,13 +102,15 @@ public class PrattleInfoReqUtil {
 	}
 
 	public static String getTail(String tail) {
-		return "        " + tail;
+		return "        ————" + tail;
 	}
 
 	public static String reducePrattle(LoverPrattle loverPrattle) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getCurrentDate())
 		  .append(getLoveDays(loverPrattle.getFallInLoveAt()))
+		  .append("\n\n")
+		  .append("元气满满的一天开始了(￣(●●)￣)")
 		  .append("\n\n")
 		  .append(getWeather(loverPrattle.getCity()))
 		  .append("    ").append(getPoetry())
