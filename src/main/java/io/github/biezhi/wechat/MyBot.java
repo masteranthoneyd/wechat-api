@@ -100,6 +100,9 @@ public class MyBot extends WeChatBot {
     public void friendMessage(WeChatMessage message) {
         if (StringUtils.isNotEmpty(message.getName())) {
             log.info("接收到好友 [{}] 的消息: {}", message.getName(), message.getText());
+			if (autoReplyLover(message)) {
+				autoReplyByAI(message);
+			}
 			/*if (message.getText().equals("拉我进群")) {
 				this.api().inviteJoinGroup(message.getFromUserName(), this.config().groupUserName());
 			}*/
@@ -107,6 +110,11 @@ public class MyBot extends WeChatBot {
 //            this.api().sendFile("战斗型美少女", "/Users/biezhi/Desktop/Hot_Spots_blade2.0.4_alpha1.html");
         }
     }
+
+	private boolean autoReplyLover(WeChatMessage message) {
+		return message.getFromUserName().equals(customConfig().getLoverPrattle().getLoverUserName())
+				&& customConfig().getAutoReply().getEnable();
+	}
 
 	/**
 	 * 好友验证消息
