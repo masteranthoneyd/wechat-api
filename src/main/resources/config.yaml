@@ -1,3 +1,4 @@
+openQrCode: true
 loverPrattle:
   enable: true
   cron: 0/30 * * * * ?

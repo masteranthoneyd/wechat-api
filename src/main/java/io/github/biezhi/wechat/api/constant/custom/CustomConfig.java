@@ -10,6 +10,8 @@ import lombok.Data;
 @Data
 public class CustomConfig {
 
+	private Boolean openQrCode = false;
+
 	private LoverPrattle loverPrattle;
 
 	private AutoReply autoReply;

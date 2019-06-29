@@ -161,7 +161,7 @@ public class WeChatApiImpl implements WeChatApi {
                     while (null == this.getUUID()) {
                         DateUtils.sleep(100);
                     }
-                    this.getQrImage(this.uuid, bot.config().openQrCode());
+                    this.getQrImage(this.uuid, bot.customConfig().getOpenQrCode());
                     log.info("请使用手机扫描屏幕二维码");
                 }
                 Boolean isLoggedIn = false;
