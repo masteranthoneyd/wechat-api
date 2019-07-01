@@ -4,13 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.biezhi</groupId>
-    <artifactId>wechat-api</artifactId>
-    <version>1.0.6</version>
-    <name>wechat-api</name>
+    <groupId>com.yangbingdong</groupId>
+    <artifactId>wechat-bot-java</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>wechat-bot-java</name>
 
-    <url>https://github.com/biezhi/wechat-api</url>
-    <description>wechat-api</description>
+    <url>https://github.com/masteranthoneyd/wechat-bot-java</url>
+    <description>wechat-bot-java</description>
 
     <licenses>
         <license>
@@ -20,15 +20,15 @@
     </licenses>
     <developers>
         <developer>
-            <name>biezhi</name>
-            <email>biezhi.me@gmail.com</email>
+            <name>yangbingdong</name>
+            <email>yangbingdong1994@gmail.com</email>
         </developer>
     </developers>
-    <scm>
+    <!--<scm>
         <connection>scm:git@github.com:biezhi/wechat-api.git</connection>
         <developerConnection>scm:git@github.com:biezhi/wechat-api.git</developerConnection>
         <url>git@github.com:biezhi/wechat-api.git</url>
-    </scm>
+    </scm>-->
 
     <dependencies>
         <!-- 日志 -->
