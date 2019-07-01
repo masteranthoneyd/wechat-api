@@ -3,6 +3,7 @@ package io.github.biezhi.wechat;
 import io.github.biezhi.wechat.ai.tuling.Tuling;
 import io.github.biezhi.wechat.api.annotation.Bind;
 import io.github.biezhi.wechat.api.constant.Config;
+import io.github.biezhi.wechat.api.constant.custom.LoverPrattle;
 import io.github.biezhi.wechat.api.enums.AccountType;
 import io.github.biezhi.wechat.api.enums.MsgType;
 import io.github.biezhi.wechat.api.model.Account;
@@ -127,10 +128,11 @@ public class MyBot extends WeChatBot {
         }
     }*/
 	public void sendPrattle() {
-		Account account = api().getAccountByName("文件传输助手");
-		if (account != null) {
+		// Account account = api().getAccountByName("文件传输助手");
+		LoverPrattle loverPrattle = this.customConfig().getLoverPrattle();
+		if (loverPrattle != null) {
 			String prattle = PrattleInfoReqUtil.reducePrattle(this.customConfig().getLoverPrattle());
-			sendMsg(account.getUserName(), prattle);
+			sendMsg(loverPrattle.getLoverUserName(), prattle);
 		}
 	}
 

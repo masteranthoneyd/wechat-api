@@ -1,6 +1,7 @@
 package io.github.biezhi.wechat.job;
 
 import io.github.biezhi.wechat.MyBot;
+import io.github.biezhi.wechat.api.WeChatApiImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.CronTrigger;
 import org.quartz.Job;
@@ -53,7 +54,10 @@ public class PrattleJobEngine {
 				log.info("Send prattle job start......");
 				JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 				MyBot myBot = (MyBot) dataMap.get(MyBot.class.getSimpleName());
-				myBot.sendPrattle();
+				WeChatApiImpl api = (WeChatApiImpl) myBot.api();
+				if (api.isInit()) {
+					myBot.sendPrattle();
+				}
 				log.info("Send prattle job end......");
 			} catch (Exception e) {
 				log.error("PrattleJob error: ", e);

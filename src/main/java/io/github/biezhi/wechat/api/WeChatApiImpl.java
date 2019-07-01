@@ -88,6 +88,7 @@ public class WeChatApiImpl implements WeChatApi {
 
 	private String uuid;
 	private boolean logging;
+	@Getter
 	private boolean init = false;
 	private int memberCount;
 	private WeChatBot bot;
@@ -218,7 +219,7 @@ public class WeChatApiImpl implements WeChatApi {
 		Set<String> userNameSet = customConfig().getAutoReply().getUserNameSet();
 		for (Account account : groupList) {
 			if (nickNames.contains(account.getNickName())) {
-				log.info("group [{}] matched, username: {}", account.getNickName(), account.getUserName());
+				log.info("Auto reply [{}] matched, username: {}", account.getNickName(), account.getUserName());
 				userNameSet.add(account.getUserName());
 				break;
 			}
@@ -227,7 +228,7 @@ public class WeChatApiImpl implements WeChatApi {
 		LoverPrattle loverPrattle = customConfig().getLoverPrattle();
 		Account lover = getAccountByName(loverPrattle.getNickName());
 		if (lover != null) {
-			log.info("lover [{}] matched, username: {}", loverPrattle.getNickName(), lover.getUserName());
+			log.info("Lover [{}] matched, username: {}", loverPrattle.getNickName(), lover.getUserName());
 			loverPrattle.setLoverUserName(lover.getUserName());
 			initCustom = true;
 		}

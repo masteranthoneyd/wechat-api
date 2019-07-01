@@ -1,14 +1,14 @@
 openQrCode: true
 loverPrattle:
   enable: true
-  cron: 0/30 * * * * ?
+  cron: 0 0 9 * * ?
   city: 广州
-  nickName: 東
+  nickName: 悦
   fallInLoveAt: 2014-02-15
   sweetsWords: 来自养猪场的程序猿
 
 autoReply:
   enable: true
   nickNames:
-    - Bot群456
+    - Bot567
   prefix: 【~(≧▽≦)~】

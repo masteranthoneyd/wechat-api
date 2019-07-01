@@ -2,6 +2,7 @@ package io.github.biezhi.wechat.api.constant.custom;
 
 import lombok.Data;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -18,5 +19,5 @@ public class AutoReply {
 
 	private String prefix;
 
-	public Set<String> userNameSet;
+	public Set<String> userNameSet = new HashSet<>();
 }
