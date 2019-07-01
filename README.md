@@ -1,141 +1,44 @@
-# wechat-api
+# wechat-bot-java
 
-wechat-api 是微信个人号的Java版本API，让个人号具备更多能力，提供方便的接口调用。
+[![](https://img.shields.io/badge/Language-Java-ff96b4.svg)](https://github.com/masteranthoneyd/wechat-bot-java) [![](https://img.shields.io/badge/license-MIT-FF0080.svg)](https://github.com/masteranthoneyd/wechat-bot-java/blob/master/LICENSE) [![](https://img.shields.io/github/stars/masteranthoneyd/wechat-bot-java.svg?style=social)](https://github.com/masteranthoneyd/wechat-bot-java) [![](https://img.shields.io/github/followers/masteranthoneyd.svg?label=Follow%20Me&style=social)](https://github.com/masteranthoneyd)
 
-[在线文档](https://biezhi.github.io/wechat-api/)
+`wechat-bot-java` 灵感来源于 *[EverydayWechat](https://github.com/sfyc23/EverydayWechat)*
 
-[![](https://img.shields.io/travis/biezhi/wechat-api.svg)](https://travis-ci.org/biezhi/wechat-api)
-[![](https://img.shields.io/maven-central/v/io.github.biezhi/wechat-api.svg)](https://mvnrepository.com/artifact/io.github.biezhi/wechat-api)
-[![](https://img.shields.io/badge/license-MIT-FF0080.svg)](https://github.com/biezhi/wechat-api/blob/master/LICENSE)
-[![@biezhi on zhihu](https://img.shields.io/badge/zhihu-%40biezhi-red.svg)](https://www.zhihu.com/people/biezhi)
-[![](https://img.shields.io/github/followers/biezhi.svg?style=social&label=Follow%20Me)](https://github.com/biezhi)
 
-## 特性
+## Feature
 
-- 使用简单，引入依赖即可
-- 支持本地图片和终端输出二维码
-- 本地自动登录
-- 支持文本、图片、视频、撤回消息等
-- 支持发送文本、图片、附件
-- 注解绑定消息监听
-- 群聊、单聊支持
-- 添加好友验证
-- 撤回消息获取
-- JDK7+
+- [x] 每天给女朋友发送土味情话
+- [x] 自动拉人进群
+- [x] 群新增成员监听并发送欢迎语
+- [x] 图灵AI自动回复
 
-## 使用
+## Config
 
-本地开发的同学请先安装 [lombok](https://projectlombok.org/) 插件并确保你的JDK环境是1.7+
+`config.yaml`:
 
-引入 `maven` 依赖
+```yml
+openQrCode: true # 打开二维码, true会调用系统Desktop默认图片浏览工具打开, false在终端显示
+loverPrattle: # 每天发送土味情话配置
+  enable: true # 是否启动
+  cron: 0 0 9 * * ? # 定时任务cron表达式
+  city: 广州 # 位置, 用于获取天气
+  nickName: 悦 # 女朋友昵称
+  fallInLoveAt: 2014-02-15 # 相识日期, 用于计算当天天数
+  sweetsWords: 来自养猪场的程序猿 # 钢铁直男的甜密后缀
 
-```xml
-<dependency>
-    <groupId>io.github.biezhi</groupId>
-    <artifactId>wechat-api</artifactId>
-    <version>1.0.6</version>
-</dependency>
+autoReply: # 自动回复配置
+  enable: true # 是否启用
+  nickNames: # 自动回复名单, 可配置多个, 群回复需要@
+    - Bot567
+  prefix: 【~(≧▽≦)~】 # 自动回复小尾巴
 ```
 
-构建自己的小机器人
+## Quick Start
 
-```java
-public class HelloBot extends WeChatBot {
-    
-    public HelloBot(Config config) {
-        super(config);
-    }
-    
-    @Bind(msgType = MsgType.TEXT)
-    public void handleText(WeChatMessage message) {
-        if (StringUtils.isNotEmpty(message.getName())) {
-            log.info("接收到 [{}] 的消息: {}", message.getName(), message.getText());
-            this.sendMsg(message.getFromUserName(), "自动回复: " + message.getText());
-        }
-    }
-    
-    public static void main(String[] args) {
-        new HelloBot(Config.me().autoLogin(true).showTerminal(true)).start();
-    }
-    
-}
-```
-
-## Bot API
-
-```java
-/**
- * 给文件助手发送消息
- *
- * @param msg 消息内容
- * @return 发送是否成功
- */
-boolean sendMsgToFileHelper(String msg);
-
-/**
- * 给某个用户发送消息
- *
- * @param name 用户UserName
- * @param msg  消息内容
- * @return 发送是否成功
- */
-boolean sendMsg(String name, String msg);
-
-/**
- * 根据名称发送消息
- *
- * @param name 备注或昵称，精确匹配
- * @param msg  消息内容
- * @return 发送是否成功
- */
-boolean sendMsgByName(String name, String msg);
-
-/**
- * 给某个用户发送图片消息
- *
- * @param name    用户UserName
- * @param imgPath 图片路径
- * @return 发送是否成功
- */
-boolean sendImg(String name, String imgPath);
-
-/**
- * 根据名称发送图片消息
- *
- * @param name    备注或昵称，精确匹配
- * @param imgPath 图片路径
- * @return 发送是否成功
- */
-boolean sendImgName(String name, String imgPath);
-
-/**
- * 给用户发送文件
- *
- * @param name     用户UserName
- * @param filePath 文件路径
- * @return 发送是否成功
- */
-boolean sendFile(String name, String filePath);
-
-/**
- * 根据名称发送文件消息
- *
- * @param name     备注或昵称，精确匹配
- * @param filePath 文件路径
- * @return 发送是否成功
- */
-boolean sendFileName(String name, String filePath);
-```
-
-[更多API见文档](https://biezhi.github.io/wechat-api/#/?id=api%e5%88%97%e8%a1%a8)
+1. 将项目 Clone 下来
+2. 打包 `mvn package`
+3. java -jar
 
 ## TODO
 
-1. 接收位置
-2. 撤回消息查看
-3. 发送文件消息
-4. 多线程处理消息
-
-## 开源协议
-
-[MIT](https://github.com/biezhi/wechat-api/blob/master/LICENSE)
+- [ ] 接收队列与发送队列解耦, 实现多线程处理消息
