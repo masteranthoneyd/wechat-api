@@ -36,8 +36,10 @@ autoReply: # 自动回复配置
 ## Quick Start
 
 1. 将项目 Clone 下来
-2. 打包 `mvn package`
-3. java -jar
+2. 打包 `mvn package`, 生成 `wechat-bot-java-0.0.1-SNAPSHOT.jar`
+3. 在 `wechat-bot-java-0.0.1-SNAPSHOT.jar` 根目录下配置 `config.yaml`
+4. 运行: `java -jar wechat-bot-java-0.0.1-SNAPSHOT.jar`
+5. 终端输入 `exit` 或 `quit` 关闭程序
 
 ## TODO
 
