@@ -12,6 +12,14 @@
 - [x] 群新增成员监听并发送欢迎语
 - [x] 图灵AI自动回复
 
+## Show
+
+![](image/demo-01.jpg)
+
+![](image/demo-02.jpg)
+
+![](image/demo-03.jpg)
+
 ## Config
 
 `config.yaml`:
