@@ -15,4 +15,6 @@ public class CustomConfig {
 	private LoverPrattle loverPrattle;
 
 	private AutoReply autoReply;
+
+    private AutoVerify autoVerify;
 }

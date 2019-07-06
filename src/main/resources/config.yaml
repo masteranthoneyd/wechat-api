@@ -13,3 +13,9 @@ autoReply:
   nickNames:
     - Bot567
   prefix: 【~(≧▽≦)~】
+
+autoVerify:
+  enable: true
+  passMessage:
+    - Java
+    - Github

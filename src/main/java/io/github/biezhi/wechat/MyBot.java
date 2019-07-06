@@ -3,6 +3,7 @@ package io.github.biezhi.wechat;
 import io.github.biezhi.wechat.ai.tuling.Tuling;
 import io.github.biezhi.wechat.api.annotation.Bind;
 import io.github.biezhi.wechat.api.constant.Config;
+import io.github.biezhi.wechat.api.constant.custom.AutoVerify;
 import io.github.biezhi.wechat.api.constant.custom.LoverPrattle;
 import io.github.biezhi.wechat.api.enums.AccountType;
 import io.github.biezhi.wechat.api.enums.MsgType;
@@ -10,9 +11,11 @@ import io.github.biezhi.wechat.api.model.Account;
 import io.github.biezhi.wechat.api.model.WeChatMessage;
 import io.github.biezhi.wechat.job.PrattleJobEngine;
 import io.github.biezhi.wechat.prattle.PrattleInfoReqUtil;
+import io.github.biezhi.wechat.utils.DateUtils;
 import io.github.biezhi.wechat.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -120,15 +123,24 @@ public class MyBot extends WeChatBot {
 	/**
 	 * 好友验证消息
 	 */
-/*    @Bind(msgType = MsgType.ADD_FRIEND)
+    @Bind(msgType = MsgType.ADD_FRIEND)
     public void addFriend(WeChatMessage message) {
         log.info("收到好友验证消息: {}", message.getText());
-        if (message.getText().contains("java")) {
-            this.api().verify(message.getRaw().getRecommend());
+        AutoVerify autoVerify = this.customConfig().getAutoVerify();
+        if (autoVerify.isEnable()) {
+            Set<String> passMessage = autoVerify.getPassMessage();
+            if (passMessage != null && passMessage.size() > 0 && passMessage.contains(message.getText())) {
+                DateUtils.sendSleep();
+                this.api().verify(message.getRaw().getRecommend());
+            }
         }
-    }*/
+    }
+
+    /**
+     * 可使用文件助手调试
+     * Account account = api().getAccountByName("文件传输助手");
+     */
 	public void sendPrattle() {
-		// Account account = api().getAccountByName("文件传输助手");
 		LoverPrattle loverPrattle = this.customConfig().getLoverPrattle();
 		if (loverPrattle != null) {
 			String prattle = PrattleInfoReqUtil.reducePrattle(this.customConfig().getLoverPrattle());

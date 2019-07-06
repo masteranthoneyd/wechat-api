@@ -11,6 +11,7 @@
 - [x] 自动拉人进群
 - [x] 群新增成员监听并发送欢迎语
 - [x] 图灵AI自动回复
+- [x] 自动同意添加好友
 
 ## Show
 
@@ -40,6 +41,12 @@ autoReply: # 自动回复配置
   nickNames: # 自动回复名单, 可配置多个, 群回复需要@
     - Bot567
   prefix: 【~(≧▽≦)~】 # 自动回复小尾巴
+  
+autoVerify: # 自动添加好友验证
+  enable: true # 是否启用
+  passMessage: # 验证信息包含以下列表时自动通过
+    - Java
+    - Github
 ```
 
 ## Quick Start
