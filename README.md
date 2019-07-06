@@ -16,9 +16,7 @@
 
 ![](image/demo-01.jpg)
 
-![](image/demo-02.jpg)
-
-![](image/demo-03.jpg)
+<div align=center><img width="50%" height="50%" src="image/demo-02.jpg"/><img width="50%" height="50%" src="image/demo-03.jpg"/></div>
 
 ## Config
 
