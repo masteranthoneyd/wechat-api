@@ -20,6 +20,8 @@
 
 ## Config
 
+请先前往图灵官网注册并获取apiKey, *[http://www.turingapi.com](http://www.turingapi.com)*
+
 `config.yaml`:
 
 ```yml
@@ -34,6 +36,7 @@ loverPrattle: # 每天发送土味情话配置
 
 autoReply: # 自动回复配置
   enable: true # 是否启用
+  tulingApiKey: asdasdasdasdasd # 图灵apiKey
   nickNames: # 自动回复名单, 可配置多个, 群回复需要@
     - Bot567
   prefix: 【~(≧▽≦)~】 # 自动回复小尾巴

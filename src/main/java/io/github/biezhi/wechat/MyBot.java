@@ -50,7 +50,7 @@ public class MyBot extends WeChatBot {
 
 	private void autoReplyByAI(WeChatMessage message) {
 		this.api().sendText(message.getFromUserName(),
-				getMessagePrefix() + Tuling.send(message, this.client().nativeOkHttpClient()));
+				getMessagePrefix() + Tuling.send(message, this.client().nativeOkHttpClient(), this.customConfig().getAutoReply().getTulingApiKey()));
 	}
 
 	private String getMessagePrefix() {

@@ -15,6 +15,8 @@ public class AutoReply {
 
 	private Boolean enable = false;
 
+	private String tulingApiKey;
+
 	private Set<String> nickNames;
 
 	private String prefix;

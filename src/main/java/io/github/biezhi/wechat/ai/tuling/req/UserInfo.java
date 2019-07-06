@@ -12,10 +12,10 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class UserInfo {
 
-	private String apiKey = "b24b376ec0444b418035720785a8cde4";
+	private String apiKey;
 	private String userId;
 
-	public static UserInfo of(String userId) {
-		return new UserInfo().setUserId(userId);
+	public static UserInfo of(String userId, String apiKey) {
+		return new UserInfo().setUserId(userId).setApiKey(apiKey);
 	}
 }

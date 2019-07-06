@@ -9,6 +9,7 @@ loverPrattle:
 
 autoReply:
   enable: true
+  tulingApiKey: b24b376ec0444b418035720785a8cde4
   nickNames:
     - Bot567
   prefix: 【~(≧▽≦)~】

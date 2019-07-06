@@ -15,7 +15,7 @@ public class TulingReq {
 	private Perception perception;
 	private UserInfo userInfo;
 
-	public static TulingReq of(String text, String userId) {
-		return new TulingReq().setPerception(Perception.of(text)).setUserInfo(UserInfo.of(userId));
+	public static TulingReq of(String text, String userId, String apiKey) {
+		return new TulingReq().setPerception(Perception.of(text)).setUserInfo(UserInfo.of(userId, apiKey));
 	}
 }
