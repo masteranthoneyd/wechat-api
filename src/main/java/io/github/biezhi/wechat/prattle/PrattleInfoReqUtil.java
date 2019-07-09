@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  * @contact yangbingdong1994@gmail.com
  */
 public class PrattleInfoReqUtil {
-	private static OkHttpClient okHttpClient;
+	public static OkHttpClient okHttpClient;
 	static {
 		OkHttpClient.Builder builder = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
 																 .writeTimeout(30, TimeUnit.SECONDS)

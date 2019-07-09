@@ -17,4 +17,6 @@ public class CustomConfig {
 	private AutoReply autoReply;
 
     private AutoVerify autoVerify;
+
+    private AutoCurse autoCurse;
 }

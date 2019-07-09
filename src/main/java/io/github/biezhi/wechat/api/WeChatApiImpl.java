@@ -217,12 +217,16 @@ public class WeChatApiImpl implements WeChatApi {
 
 		Set<String> nickNames = customConfig().getAutoReply().getNickNames();
 		Set<String> userNameSet = customConfig().getAutoReply().getUserNameSet();
-		for (Account account : groupList) {
+        Set<String> curseNickNames = customConfig().getAutoCurse().getNickNames();
+        Set<String> curseUserNameSet = customConfig().getAutoCurse().getUserNameSet();
+        for (Account account : groupList) {
 			if (nickNames.contains(account.getNickName())) {
 				log.info("Auto reply [{}] matched, username: {}", account.getNickName(), account.getUserName());
 				userNameSet.add(account.getUserName());
-				break;
 			}
+            if (curseNickNames.contains(account.getNickName())) {
+                curseUserNameSet.add(account.getUserName());
+            }
 		}
 
 		LoverPrattle loverPrattle = customConfig().getLoverPrattle();

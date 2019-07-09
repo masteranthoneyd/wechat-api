@@ -1,8 +1,10 @@
 package io.github.biezhi.wechat;
 
+import io.github.biezhi.wechat.ai.shadiao.ShadiaoApi;
 import io.github.biezhi.wechat.ai.tuling.Tuling;
 import io.github.biezhi.wechat.api.annotation.Bind;
 import io.github.biezhi.wechat.api.constant.Config;
+import io.github.biezhi.wechat.api.constant.custom.AutoCurse;
 import io.github.biezhi.wechat.api.constant.custom.AutoVerify;
 import io.github.biezhi.wechat.api.constant.custom.LoverPrattle;
 import io.github.biezhi.wechat.api.enums.AccountType;
@@ -107,6 +109,10 @@ public class MyBot extends WeChatBot {
 			if (autoReplyLover(message)) {
 				autoReplyByAI(message);
 			}
+            if (autoCurse(message)) {
+                this.api()
+                    .sendText(message.getFromUserName(), ShadiaoApi.curse(customConfig().getAutoCurse().isFire()));
+            }
 			/*if (message.getText().equals("拉我进群")) {
 				this.api().inviteJoinGroup(message.getFromUserName(), this.config().groupUserName());
 			}*/
@@ -115,9 +121,14 @@ public class MyBot extends WeChatBot {
         }
     }
 
-	private boolean autoReplyLover(WeChatMessage message) {
-		return message.getFromUserName().equals(customConfig().getLoverPrattle().getLoverUserName())
-				&& customConfig().getAutoReply().getEnable();
+    private boolean autoCurse(WeChatMessage message) {
+        AutoCurse autoCurse = customConfig().getAutoCurse();
+        return autoCurse.isEnable() && autoCurse.getUserNameSet().contains(message.getFromUserName());
+    }
+
+    private boolean autoReplyLover(WeChatMessage message) {
+		return customConfig().getAutoReply().getEnable()
+                && message.getFromUserName().equals(customConfig().getLoverPrattle().getLoverUserName());
 	}
 
 	/**

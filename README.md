@@ -11,7 +11,8 @@
 - [x] 自动拉人进群
 - [x] 群新增成员监听并发送欢迎语
 - [x] 图灵AI自动回复
-- [x] 自动同意添加好友
+- [x] 根据验证信息自动同意添加好友
+- [x] 自动骂人
 
 ## Show
 
@@ -41,6 +42,12 @@ autoReply: # 自动回复配置
   nickNames: # 自动回复名单, 可配置多个, 群回复需要@
     - Bot567
   prefix: 【~(≧▽≦)~】 # 自动回复小尾巴
+  
+autoCurse: # 自动骂人配置
+  enable: true # 是否启用
+  fire: false # 是否火力全开, 拉黑必备
+  nickNames: # 骂人名单
+    - SomePeple 
   
 autoVerify: # 自动添加好友验证
   enable: true # 是否启用

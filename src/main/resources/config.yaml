@@ -14,6 +14,12 @@ autoReply:
     - Bot567
   prefix: 【~(≧▽≦)~】
 
+autoCurse:
+  enable: false
+  fire: false
+  nickNames:
+    - NoPeple
+
 autoVerify:
   enable: true
   passMessage:
