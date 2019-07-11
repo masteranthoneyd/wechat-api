@@ -1,6 +1,6 @@
 # wechat-bot-java
 
-[![](https://img.shields.io/badge/Language-Java-ff96b4.svg)](https://github.com/masteranthoneyd/wechat-bot-java) [![](https://img.shields.io/badge/license-MIT-FF0080.svg)](https://github.com/masteranthoneyd/wechat-bot-java/blob/master/LICENSE) [![](https://img.shields.io/github/stars/masteranthoneyd/wechat-bot-java.svg?style=social)](https://github.com/masteranthoneyd/wechat-bot-java) [![](https://img.shields.io/github/followers/masteranthoneyd.svg?label=Follow%20Me&style=social)](https://github.com/masteranthoneyd)
+[![](https://img.shields.io/badge/Language-Java-ff96b4.svg)](https://github.com/masteranthoneyd/wechat-bot-java) [![](https://img.shields.io/badge/license-MIT-FF0080.svg)](https://github.com/masteranthoneyd/wechat-bot-java/blob/master/LICENSE) [![](https://img.shields.io/github/stars/masteranthoneyd/wechat-bot-java.svg?style=social)](https://github.com/masteranthoneyd/wechat-bot-java) [![](https://img.shields.io/github/followers/masteranthoneyd.svg?label=Follow%20Me&style=social)](https://github.com/masteranthoneyd)[![](https://img.shields.io/github/release/masteranthoneyd/wechat-bot-java.svg)](https://github.com/masteranthoneyd/wechat-bot-java/releases/tag/v2)
 
 `wechat-bot-java` 灵感来源于 *[EverydayWechat](https://github.com/sfyc23/EverydayWechat)*
 
@@ -58,11 +58,10 @@ autoVerify: # 自动添加好友验证
 
 ## Quick Start
 
-1. 将项目 Clone 下来
-2. 打包 `mvn package`, 生成 `wechat-bot-java-0.0.1-SNAPSHOT.jar`
-3. 在 `wechat-bot-java-0.0.1-SNAPSHOT.jar` 根目录下配置 `config.yaml`
-4. 运行: `java -jar wechat-bot-java-0.0.1-SNAPSHOT.jar`
-5. 终端输入 `exit` 或 `quit` 关闭程序
+1. 下载 *[最新版本](https://github.com/masteranthoneyd/wechat-bot-java/releases/tag/v2)*
+2. 在jar包根目录下配置 `config.yaml`
+3. 运行: `java -jar wechat-bot-java-v2.jar`
+4. 终端输入 `exit` 或 `quit` 关闭程序
 
 ## TODO
 
