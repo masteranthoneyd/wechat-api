@@ -304,18 +304,25 @@ public class WeChatBot {
 	protected void other() {
 		while (true) {
 			Scanner scanner = new Scanner(System.in);
+            Account account = api().getAccountByName("文件传输助手");
 			if (scanner.hasNext()) {
 				String text = scanner.next();
 				if ("quit".equals(text) || "exit".equals(text)) {
 					api.logout();
 					break;
-				} else {
-					Account account = api().getAccountByName("文件传输助手");
+				} else if ("prattle".equals(text)){
 					if (account != null) {
 						String prattle = PrattleInfoReqUtil.reducePrattle(this.customConfig().getLoverPrattle());
 						sendMsg(account.getUserName(), prattle);
 					}
-				}
+                } else if ("img".equals(text)) {
+                    String userName = account.getUserName();
+                    api.sendImg(userName, "/home/ybd/图片/选区_011.png");
+                    api.sendImg(userName, "/home/ybd/图片/选区_012.png");
+                    api.sendImg(userName, "/home/ybd/图片/选区_013.png");
+                    api.sendImg(userName, "/home/ybd/图片/选区_014.png");
+                    api.sendImg(userName, "/home/ybd/图片/选区_015.png");
+                }
 			}
 			DateUtils.sleep(1000);
 		}

@@ -23,8 +23,9 @@ public class Tuling {
 	public static String send(WeChatMessage message, OkHttpClient client, String apiKey) {
 		try {
 			Request.Builder builder = new Request.Builder();
-			RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=UTF-8"),
-					WeChatUtils.toJson(TulingReq.of(message.getText(), message.getGroupMsgOwner().substring(1, 10), apiKey)));
+            String userId = message.getGroupMsgOwner() == null ? message.getFromUserName() : message.getGroupMsgOwner();
+            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=UTF-8"),
+					WeChatUtils.toJson(TulingReq.of(message.getText(), userId.substring(1, 10), apiKey)));
 			Request request = builder.url("http://openapi.tuling123.com/openapi/api/v2")
 									 .post(requestBody)
 									 .build();
