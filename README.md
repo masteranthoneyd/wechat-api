@@ -66,3 +66,6 @@ autoVerify: # 自动添加好友验证
 ## TODO
 
 - [ ] 接收队列与发送队列解耦, 实现多线程处理消息
+
+## 微信 Web 协议参考
+*[https://huangzhike.github.io/2019/01/15/%E7%AC%94%E8%AE%B0-%E5%BE%AE%E4%BF%A1%E5%8D%8F%E8%AE%AE/](https://huangzhike.github.io/2019/01/15/%E7%AC%94%E8%AE%B0-%E5%BE%AE%E4%BF%A1%E5%8D%8F%E8%AE%AE/)*
